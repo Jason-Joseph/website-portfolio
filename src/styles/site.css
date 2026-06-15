@@ -477,6 +477,78 @@ html.has-cursor [data-cursor] {
   transform: translate(4px, -4px);
 }
 
+/* --- spotlight + border beam (21st.dev patterns, ported to CSS+GSAP) ------- */
+
+/* Cursor-aware glow: useSpotlight feeds --spot-x / --spot-y; a soft
+   accent-tinted radial follows the pointer inside any [data-spotlight]. */
+[data-spotlight] {
+  position: relative;
+  isolation: isolate; /* keep the glow's stacking local to this element */
+}
+[data-spotlight] > * {
+  position: relative;
+  z-index: 1; /* content rides above the glow layer */
+}
+[data-spotlight]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    220px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--accent-soft),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+[data-spotlight]:hover::before {
+  opacity: 0.16;
+}
+
+/* Border beam: a light tracing the card edge. A rotating conic gradient is
+   masked to a 1px ring via mask-composite. @property makes the angle
+   animatable. */
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.border-beam {
+  position: relative;
+}
+.border-beam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2; /* the ring sits above the content edge, never over text */
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0%,
+    transparent 72%,
+    var(--accent) 84%,
+    var(--accent-soft) 90%,
+    transparent 97%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.75;
+  animation: beam-rotate 7s linear infinite;
+}
+@keyframes beam-rotate {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
 /* --- about ----------------------------------------------------------------------- */
 
 .about-grid {
