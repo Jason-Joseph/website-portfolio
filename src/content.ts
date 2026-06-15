@@ -70,7 +70,7 @@ export const content = {
     firstName: "Jason",
     title: "Data Enthusiast",
     tagline:
-      "Data-driven and endlessly curious — I translate messy, real-world data into clear insight that drives decisions.",
+      "Fintech and banking analytics across Singapore and Indonesia — turning transaction data and business signals into clarity that actually changes decisions.",
     photoPath: "/portrait.jpg",
   } satisfies Profile,
 
@@ -79,7 +79,7 @@ export const content = {
     body:
       "I'm a final-year NUS Master's candidate specialising in Data and Communication, and a First Class LSE graduate in Data Science & Business Analytics. " +
       "My work sits at the intersection of analytics and partnerships across fintech and banking — building dashboards, automating reporting, and digging into transaction data. " +
-      "Day to day, that means Python, SQL, and BI tools turning raw numbers into something stakeholders can actually use.",
+      "Day to day, that means Python, SQL, and BI tools — and staying curious about what the numbers are actually trying to say.",
   },
 
   stats: [

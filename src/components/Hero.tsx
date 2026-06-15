@@ -47,13 +47,13 @@ export default function Hero({ ready }: { ready: boolean }) {
         <p className="hero-kicker" data-hero-fade>
           <em>{content.profile.title}</em> — {content.contact.location}
         </p>
-        <h1 className="display hero-title" aria-label="Turning raw data into clear decisions">
+        <h1 className="display hero-title" aria-label="Numbers made legible. Decisions made easier.">
           <span className="reveal-line hero-line">
-            <span className="reveal-inner">Turning raw data</span>
+            <span className="reveal-inner">Numbers made legible.</span>
           </span>
           <span className="reveal-line hero-line">
             <span className="reveal-inner">
-              into <i>clear decisions.</i>
+              <i>Decisions made easier.</i>
             </span>
           </span>
         </h1>
@@ -82,7 +82,7 @@ export default function Hero({ ready }: { ready: boolean }) {
 
       <div className="container hero-meta" data-hero-fade>
         <span>NUS · LSE</span>
-        <span className="hero-meta-mid">Fintech &amp; banking analytics</span>
+        <span className="hero-meta-mid">KPay · BCA</span>
         <a href="#work" className="hero-scroll" aria-label="Scroll to selected work">
           Scroll
           <svg width="10" height="26" viewBox="0 0 10 26" fill="none" aria-hidden="true">

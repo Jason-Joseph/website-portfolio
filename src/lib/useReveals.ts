@@ -147,12 +147,12 @@ export function useReveals(ready: boolean) {
       // spring back — the page visibly reacts to how hard you scroll.
       const skewTargets = document.querySelectorAll<HTMLElement>("[data-skew]");
       if (skewTargets.length) {
-        const clamp = gsap.utils.clamp(-3.5, 3.5);
+        const clamp = gsap.utils.clamp(-2, 2);
         const proxy = { skew: 0 };
         const apply = () => skewTargets.forEach((el) => gsap.set(el, { skewY: proxy.skew }));
         ScrollTrigger.create({
           onUpdate: (self) => {
-            const skew = clamp(self.getVelocity() / -450);
+            const skew = clamp(self.getVelocity() / -600);
             if (Math.abs(skew) > Math.abs(proxy.skew)) {
               proxy.skew = skew;
               gsap.to(proxy, {
