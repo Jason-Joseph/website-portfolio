@@ -41,14 +41,7 @@ export default function Projects() {
         <ul className="project-list" data-reveal-group data-skew>
           {featured.map((p) => (
             <li key={p.index} data-reveal>
-              <a
-                className="project-row"
-                href={p.link}
-                target="_blank"
-                rel="noreferrer"
-                data-cursor
-                data-spotlight
-              >
+              <a className="project-row" href={p.link} target="_blank" rel="noreferrer" data-cursor>
                 <span className="project-No">{p.index}</span>
                 <span className="project-main">
                   <span className="project-title">{p.title}</span>
@@ -68,13 +61,12 @@ export default function Projects() {
         </ul>
 
         <a
-          className="github-card border-beam"
+          className="github-card"
           href="https://github.com/Jason-Joseph/Projects"
           target="_blank"
           rel="noreferrer"
           data-cursor
           data-reveal
-          data-spotlight
         >
           <span className="github-card-text">
             <strong className="display">

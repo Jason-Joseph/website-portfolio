@@ -8,7 +8,6 @@
 import { useState } from "react";
 import { useLenis } from "./lib/useLenis";
 import { useReveals } from "./lib/useReveals";
-import { useSpotlight } from "./lib/useSpotlight";
 import Silk from "./three/Silk";
 import Preloader from "./components/Preloader";
 import Cursor from "./components/Cursor";
@@ -24,7 +23,6 @@ export default function App() {
   const [ready, setReady] = useState(false);
   useLenis();
   useReveals(ready);
-  useSpotlight(ready);
 
   return (
     <>
