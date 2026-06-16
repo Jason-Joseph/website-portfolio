@@ -59,7 +59,7 @@ export default function Hero({ ready }: { ready: boolean }) {
         </h1>
         <div className="hero-sub" data-hero-fade>
           <p className="hero-tagline">{content.profile.tagline}</p>
-          <p className="hero-name">{content.profile.name}</p>
+          <p className="hero-name shimmer-text">{content.profile.name}</p>
         </div>
         <div className="hero-ctas" data-hero-fade>
           <a className="hero-cta" href={`mailto:${content.contact.email}`} data-cursor>
