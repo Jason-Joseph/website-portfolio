@@ -214,7 +214,9 @@ html.has-cursor [data-cursor] {
   color: var(--accent);
 }
 .hero-title {
-  font-size: clamp(3rem, 9.6vw, 9rem);
+  /* Sized so the longest line ("Decisions made easier.") fits on one line —
+     these lines are nowrap, so the cap must clear the container width. */
+  font-size: clamp(2rem, 6.2vw, 5.4rem);
   white-space: nowrap; /* hand-broken lines must never rewrap inside a mask */
 }
 .hero-sub {
@@ -1003,7 +1005,7 @@ html.has-cursor [data-cursor] {
     display: none;
   }
   .hero-title {
-    font-size: clamp(1.6rem, 8.8vw, 3.2rem);
+    font-size: clamp(1.2rem, 6.4vw, 2rem);
   }
   .about-lead {
     font-size: clamp(1.45rem, 6.4vw, 1.8rem);
