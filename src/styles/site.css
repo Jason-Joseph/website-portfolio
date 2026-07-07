@@ -14,40 +14,64 @@
   z-index: var(--z-preloader);
   background: var(--ink);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
 }
 .preloader-inner {
-  width: 100%;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.7rem;
   padding: var(--gutter);
 }
-.preloader-name {
-  font-family: var(--serif);
-  font-size: clamp(1.4rem, 3.2vw, 2.4rem);
-  line-height: 1.25;
-  color: #eef0f4;
+/* The JJT monogram draws on via stroke-dashoffset (driven from Preloader.tsx),
+   then the glyphs fill and the brand dot pops. */
+.preloader-mark {
+  width: clamp(170px, 24vw, 240px);
+  height: auto;
+  overflow: visible;
 }
-.preloader-role {
-  font-family: var(--sans);
-  font-size: 0.72rem;
-  font-weight: 400;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: #99a0b0;
-}
-.preloader-start {
-  transform: translateY(115%);
-}
-.preloader-counter {
+.preloader-mark-text {
   font-family: var(--serif);
   font-style: italic;
-  font-size: clamp(3.2rem, 9vw, 7rem);
-  line-height: 0.9;
-  color: #7388ff;
+  font-size: 58px;
+  fill: #eef0f4;
+  fill-opacity: 0;
+  stroke: #eef0f4;
+  stroke-width: 1.1;
+}
+.preloader-progress {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.preloader-bar {
+  position: relative;
+  display: block;
+  width: min(240px, 56vw);
+  height: 1px;
+  background: rgba(238, 240, 244, 0.14);
+  overflow: hidden;
+}
+.preloader-bar i {
+  position: absolute;
+  inset: 0;
+  background: #7388ff;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.preloader-counter {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: #99a0b0;
   font-variant-numeric: tabular-nums;
+}
+.preloader-byline {
+  font-size: 0.68rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #5a6070;
+  text-align: center;
 }
 
 /* --- custom cursor ------------------------------------------------------- */
