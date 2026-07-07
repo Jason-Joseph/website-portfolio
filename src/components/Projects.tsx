@@ -80,7 +80,7 @@ export default function Projects() {
             <strong className="display">
               More on <i>GitHub</i>
             </strong>
-            <span>The full archive — notebooks, coursework, and experiments.</span>
+            <span>Notebooks, models, and the occasional rabbit hole.</span>
           </span>
           <span className="github-card-arrow">
             <Arrow size={26} />
