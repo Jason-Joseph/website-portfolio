@@ -77,6 +77,17 @@ export default function Hero({ ready }: { ready: boolean }) {
               <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" strokeWidth="1.6" />
             </svg>
           </a>
+          <a
+            className="hero-cta hero-cta-ghost"
+            href="/Jason-Joseph-Tjiadi-CV.pdf"
+            download
+            data-cursor
+          >
+            Download CV
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 20h14" stroke="currentColor" strokeWidth="1.6" />
+            </svg>
+          </a>
         </div>
       </div>
 

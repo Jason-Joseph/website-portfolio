@@ -77,7 +77,7 @@ export const content = {
   about: {
     lead: "I turn messy, real-world data into insight people can act on.",
     body:
-      "I'm a final-year NUS Master's candidate specialising in Data and Communication, and a First Class LSE graduate in Data Science & Business Analytics. " +
+      "I'm an NUS Master of Communication graduate (Data and Communication), and a First Class LSE graduate in Data Science & Business Analytics. " +
       "My work sits at the intersection of analytics and partnerships across fintech and banking — building dashboards, automating reporting, and digging into transaction data. " +
       "Day to day, that means Python, SQL, and BI tools — and staying curious about what the numbers are actually trying to say.",
   },
@@ -107,7 +107,7 @@ export const content = {
     {
       company: "PT Bank Central Asia Tbk (BCA)",
       shortName: "BCA",
-      role: "Analyst, Partnership & Benefits",
+      role: "Analyst, Partnership & Benefits · Individual Customer Business Division",
       location: "Indonesia",
       dates: "Dec 2023 — Jul 2025",
       logo: "/logos/bca.svg",
@@ -124,8 +124,8 @@ export const content = {
     {
       institution: "National University of Singapore",
       degree: "Master of Communication, Data and Communication Specialisation",
-      dates: "Aug 2025 — Jul 2026",
-      details: "GPA 4.4 / 5.0",
+      dates: "Aug 2025 — Jun 2026",
+      details: "GPA 4.6 / 5.0",
       logo: "/logos/nus.png",
     },
     {
