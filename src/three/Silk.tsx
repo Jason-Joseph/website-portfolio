@@ -150,13 +150,30 @@ function Surface() {
   );
 }
 
+/** WebGL can be unavailable (hardware acceleration off, old drivers,
+ *  blocklists) — probe once so those visitors get the CSS fallback
+ *  instead of a blank backdrop. */
+function supportsWebGL(): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
+
 function Silk() {
+  if (!supportsWebGL()) {
+    return <div className="backdrop backdrop-fallback" aria-hidden="true" />;
+  }
   return (
     <div className="backdrop" aria-hidden="true">
       <Canvas
         dpr={[1, 1.75]}
         camera={{ fov: 50, near: 0.1, far: 50, position: [0, 2.6, 7] }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        // Reduced motion: render one static frame instead of a 60fps loop.
+        frameloop={motionPref.reduced ? "demand" : "always"}
       >
         <Surface />
       </Canvas>

@@ -5,6 +5,7 @@
 // ---------------------------------------------------------------------------
 
 import { useEffect, useState } from "react";
+import { motionPref, setMotionEnabled } from "../lib/motion";
 import content from "../content";
 
 function useSingaporeTime() {
@@ -98,6 +99,13 @@ export default function Contact() {
             © {year} {content.profile.name}
           </span>
           <span className="footer-built">Designed &amp; built with three.js + GSAP</span>
+          <button
+            type="button"
+            className="footer-motion"
+            onClick={() => setMotionEnabled(motionPref.reduced)}
+          >
+            {motionPref.reduced ? "Enable motion" : "Reduce motion"}
+          </button>
           <a href="#top">Back to top ↑</a>
         </div>
       </footer>

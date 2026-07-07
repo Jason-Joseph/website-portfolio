@@ -98,6 +98,13 @@ html.has-cursor [data-cursor] {
 .backdrop canvas {
   display: block;
 }
+/* Static echo of the silk when WebGL is unavailable (or while the three.js
+   chunk is still loading): a soft cobalt glow rising from the lower edge. */
+.backdrop-fallback {
+  background:
+    radial-gradient(120% 70% at 70% 115%, rgba(110, 133, 255, 0.14), transparent 60%),
+    radial-gradient(90% 55% at 12% 112%, rgba(110, 133, 255, 0.08), transparent 62%);
+}
 
 /* --- nav ------------------------------------------------------------------ */
 
@@ -931,6 +938,16 @@ html.has-cursor [data-cursor] {
   transition: color 0.25s ease;
 }
 .footer a:hover {
+  color: var(--accent);
+}
+.footer-motion {
+  font-size: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--faint);
+  transition: color 0.25s ease;
+}
+.footer-motion:hover {
   color: var(--accent);
 }
 

@@ -5,11 +5,14 @@
 // gates the hero/nav entrances + scroll reveals.
 // ---------------------------------------------------------------------------
 
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useLenis } from "./lib/useLenis";
 import { useReveals } from "./lib/useReveals";
 import { useSpotlight } from "./lib/useSpotlight";
-import Silk from "./three/Silk";
+
+// three.js + @react-three/fiber are by far the heaviest imports — split
+// them into their own chunk so first paint isn't waiting on the backdrop.
+const Silk = lazy(() => import("./three/Silk"));
 import Preloader from "./components/Preloader";
 import Cursor from "./components/Cursor";
 import Nav from "./components/Nav";
@@ -29,7 +32,9 @@ export default function App() {
   return (
     <>
       <Preloader onDone={() => setReady(true)} />
-      <Silk />
+      <Suspense fallback={<div className="backdrop backdrop-fallback" aria-hidden="true" />}>
+        <Silk />
+      </Suspense>
       <Cursor />
 
       <Nav ready={ready} />
