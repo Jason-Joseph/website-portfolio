@@ -15,8 +15,44 @@ function Arrow({ size = 22 }: { size?: number }) {
   );
 }
 
+function ProjectRow({ p }: { p: ProjectItem }) {
+  return (
+    <li data-reveal>
+      <a
+        className="project-row"
+        href={p.link}
+        target={p.link.startsWith("mailto:") ? undefined : "_blank"}
+        rel="noreferrer"
+        data-cursor
+        data-spotlight
+      >
+        <span className="project-No">{p.index}</span>
+        {p.image && (
+          <span className="project-thumb">
+            <img src={p.image} alt={p.imageAlt ?? `${p.title} preview`} loading="lazy" />
+          </span>
+        )}
+        <span className="project-main">
+          <span className="project-title">{p.title}</span>
+          <span className="project-desc">{p.description}</span>
+        </span>
+        <span className="project-side">
+          <span className="project-tags">
+            {p.tags.map((t) => (
+              <span key={t}>{t}</span>
+            ))}
+          </span>
+          <Arrow />
+        </span>
+      </a>
+    </li>
+  );
+}
+
 export default function Projects() {
-  const featured: ProjectItem[] = content.projects.slice(0, FEATURED_PROJECTS);
+  const all: ProjectItem[] = content.projects;
+  const dataWork = all.filter((p) => p.kind === "data").slice(0, FEATURED_PROJECTS);
+  const aiWork = all.filter((p) => p.kind === "ai");
 
   return (
     <section className="section projects" id="work">
@@ -38,37 +74,21 @@ export default function Projects() {
           </span>
         </h2>
 
+        <p className="work-band-label" data-reveal>
+          Data work
+        </p>
         <ul className="project-list" data-reveal-group data-skew>
-          {featured.map((p) => (
-            <li key={p.index} data-reveal>
-              <a
-                className="project-row"
-                href={p.link}
-                target="_blank"
-                rel="noreferrer"
-                data-cursor
-                data-spotlight
-              >
-                <span className="project-No">{p.index}</span>
-                {p.image && (
-                  <span className="project-thumb">
-                    <img src={p.image} alt={p.imageAlt ?? `${p.title} preview`} loading="lazy" />
-                  </span>
-                )}
-                <span className="project-main">
-                  <span className="project-title">{p.title}</span>
-                  <span className="project-desc">{p.description}</span>
-                </span>
-                <span className="project-side">
-                  <span className="project-tags">
-                    {p.tags.map((t) => (
-                      <span key={t}>{t}</span>
-                    ))}
-                  </span>
-                  <Arrow />
-                </span>
-              </a>
-            </li>
+          {dataWork.map((p) => (
+            <ProjectRow p={p} key={p.index} />
+          ))}
+        </ul>
+
+        <p className="work-band-label work-band-ai" data-reveal>
+          Built with AI
+        </p>
+        <ul className="project-list" data-reveal-group data-skew>
+          {aiWork.map((p) => (
+            <ProjectRow p={p} key={p.index} />
           ))}
         </ul>
 

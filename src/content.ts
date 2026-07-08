@@ -48,11 +48,13 @@ export interface ProjectItem {
   title: string;
   description: string;
   tags: string[];
-  /** Source/live link (GitHub repo, notebook, or deployed site). */
+  /** Source/live link (GitHub repo, notebook, deployed site, or mailto). */
   link: string;
   /** Cover chart under /public/projects — one strong image per project. */
   image?: string;
   imageAlt?: string;
+  /** Which Work band the project renders in. */
+  kind: "data" | "ai";
 }
 
 export interface Contact {
@@ -185,6 +187,7 @@ export const content = {
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Data%20Expo%202002-2003%20Airline%20Time%20Data.ipynb",
       image: "/projects/q1_delay_by_day.png",
       imageAlt: "Bar chart of average U.S. flight delay by day of week",
+      kind: "data",
     },
     {
       index: "02",
@@ -195,6 +198,7 @@ export const content = {
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Kaggle%20Superstore%20Data.ipynb",
       image: "/projects/superstore_correlation.png",
       imageAlt: "Correlation heatmap of Superstore sales, quantity, discount, and profit",
+      kind: "data",
     },
     {
       index: "03",
@@ -205,30 +209,69 @@ export const content = {
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Online%20Retail%20Customer%20Analytics%20Dashboard.pdf",
       image: "/projects/cohort_analysis.jpg",
       imageAlt: "Customer retention cohort analysis heatmap",
+      kind: "data",
     },
     {
       index: "04",
+      title: "This Portfolio Site",
+      description:
+        "The site you're on — a three.js silk shader, GSAP scroll choreography, and React, designed and shipped end-to-end in partnership with Claude Code.",
+      tags: ["Claude Code", "three.js", "React"],
+      link: "https://github.com/Jason-Joseph/website-portfolio",
+      image: "/projects/portfolio-cover.jpg",
+      imageAlt: "Hero of this portfolio — Numbers made legible, decisions made easier",
+      kind: "ai",
+    },
+    {
+      index: "05",
+      title: "Unfold — A Conversation Card Game",
+      description:
+        "One card at a time, everyone unfolds a little. A conversation card game with live sessions you can host or join — vibe-coded with Claude Code and installable on your phone as a web app.",
+      tags: ["Claude Code", "PWA", "Game"],
+      link: "https://unfold-cardgame.vercel.app",
+      image: "/projects/unfold-cover.jpg",
+      imageAlt: "Unfold card game landing screen",
+      kind: "ai",
+    },
+    {
+      index: "06",
+      title: "Kaching — Telegram Budget Tracker",
+      description:
+        "A Telegram-first expense tracker: message the bot in plain language, AI parses the spend, and a live web dashboard keeps the running picture. Built for Singapore daily spending — ask me for a demo.",
+      tags: ["Claude Code", "Next.js", "Telegram"],
+      link: "mailto:jjtjiadi02@gmail.com?subject=Kaching%20demo",
+      image: "/projects/kaching-cover.jpg",
+      imageAlt: "Kaching — Telegram-first expense tracking",
+      kind: "ai",
+    },
+    {
+      index: "07",
+      title: "Agentic OS — Usage Observatory",
+      description:
+        "A personal observability system for AI-assisted work: collectors and hooks feed a live HUD with a knowledge-graph globe, skill rankings, and session analytics — zero tokens spent on tracking.",
+      tags: ["Claude Code", "Analytics", "Tooling"],
+      link: "mailto:jjtjiadi02@gmail.com?subject=Agentic%20OS",
+      image: "/projects/agentic-os-cover.jpg",
+      imageAlt: "Agentic OS HUD with knowledge-graph globe and skill rankings",
+      kind: "ai",
+    },
+    {
+      index: "08",
       title: "Customer Churn Clustering & Classification",
       description:
         "A two-part telco churn study in R — K-means and hierarchical clustering to find the segments, then logistic regression, decision trees, and random forests to predict who leaves.",
       tags: ["R", "Clustering", "Classification"],
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Customer%20Churn%20Clustering%20and%20Classification.R",
+      kind: "data",
     },
     {
-      index: "05",
+      index: "09",
       title: "Vehicle Price Regression Analysis",
       description:
         "Car-price prediction in R — multiple linear regression, CART, and random forests with cost-complexity pruning, benchmarked head-to-head.",
       tags: ["R", "Regression", "Random Forest"],
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Vehicle%20Price%20Regression%20Analysis.R",
-    },
-    {
-      index: "06",
-      title: "Personal Portfolio Site",
-      description:
-        "An earlier personal portfolio — designed, built, and shipped to production on Vercel.",
-      tags: ["HTML", "CSS", "Web"],
-      link: "https://github.com/Jason-Joseph/website-portfolio",
+      kind: "data",
     },
   ] satisfies ProjectItem[],
 
