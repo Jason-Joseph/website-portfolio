@@ -5,7 +5,7 @@
 // else. Whole rows are links.
 // ---------------------------------------------------------------------------
 
-import content, { FEATURED_PROJECTS } from "../content";
+import content, { FEATURED_PROJECTS, type ProjectItem } from "../content";
 
 function Arrow({ size = 22 }: { size?: number }) {
   return (
@@ -16,7 +16,7 @@ function Arrow({ size = 22 }: { size?: number }) {
 }
 
 export default function Projects() {
-  const featured = content.projects.slice(0, FEATURED_PROJECTS);
+  const featured: ProjectItem[] = content.projects.slice(0, FEATURED_PROJECTS);
 
   return (
     <section className="section projects" id="work">
