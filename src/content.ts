@@ -193,18 +193,18 @@ export const content = {
         "The Kaggle Superstore dataset, cleaned and explored in Python — breaking down sales and profit by category, region, and segment to surface where to double down and where to cut back.",
       tags: ["Python", "pandas", "Retail Analytics"],
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Kaggle%20Superstore%20Data.ipynb",
-      image: "/projects/best_selling_products.png",
-      imageAlt: "Horizontal bar chart of best-selling Superstore products",
+      image: "/projects/superstore_correlation.png",
+      imageAlt: "Correlation heatmap of Superstore sales, quantity, discount, and profit",
     },
     {
       index: "03",
-      title: "Business Intelligence Capstone",
+      title: "Online Retail Customer Analytics Dashboard",
       description:
         "Capstone from the Dibimbing.id BI bootcamp — RFM segmentation and cohort analysis across 1.07M UK retail transactions, from raw data to boardroom-ready dashboards.",
       tags: ["Business Intelligence", "Tableau", "Power BI"],
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Online%20Retail%20Customer%20Analytics%20Dashboard.pdf",
-      image: "/projects/rfm_dashboard.jpg",
-      imageAlt: "RFM customer-segmentation dashboard",
+      image: "/projects/cohort_analysis.jpg",
+      imageAlt: "Customer retention cohort analysis heatmap",
     },
     {
       index: "04",
