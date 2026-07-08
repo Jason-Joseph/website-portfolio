@@ -20,12 +20,13 @@ import { gsap, ScrollTrigger, motionPref, themeState } from "./motion";
 
 export function useReveals(ready: boolean) {
   useLayoutEffect(() => {
-    if (!ready || motionPref.reduced) return;
+    if (!ready) return;
 
     const ctx = gsap.context(() => {
       // Theme band: the page crossfades to the light primary across the
       // projects + about stretch, then back to ink. CSS vars handle the DOM;
-      // themeState.target steers the silk shader palette.
+      // themeState.target steers the silk shader palette. This is a color
+      // crossfade, not movement — it runs even under reduced motion.
       ScrollTrigger.create({
         trigger: "#work",
         endTrigger: "#about",
@@ -36,6 +37,11 @@ export function useReveals(ready: boolean) {
           themeState.target = self.isActive ? 1 : 0;
         },
       });
+
+      if (motionPref.reduced) {
+        ScrollTrigger.refresh();
+        return; // everything below moves things — skipped when reduced
+      }
       // Masked line reveals, batched per closest section so lines in the
       // same headline stagger together.
       document.querySelectorAll<HTMLElement>("[data-lines]").forEach((block) => {

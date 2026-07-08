@@ -11,25 +11,23 @@ gsap.registerPlugin(ScrollTrigger);
 export { gsap, ScrollTrigger };
 
 /**
- * Motion kill-switch. Respects prefers-reduced-motion (Windows maps its
- * global "Animation effects" toggle to that media query), but a visitor
- * can override it either way via the footer toggle — the choice persists
- * in localStorage and wins over the OS setting. Every animation site-wide
- * reads this once at mount, so changing it requires a reload (the toggle
- * handles that).
+ * Motion kill-switch. The animated experience is the DEFAULT for everyone:
+ * Windows maps its global "Animation effects" toggle to
+ * prefers-reduced-motion, which would silently flatten the whole site for a
+ * large share of desktop visitors (the owner's own machine included) — so
+ * the media query is deliberately not consulted. Visitors who want less
+ * motion use the explicit footer toggle instead; that choice persists in
+ * localStorage and is read once at mount (the toggle reloads to apply).
  */
-const MOTION_KEY = "jjt-motion"; // "on" | "off" | absent (follow the OS)
+const MOTION_KEY = "jjt-motion"; // "off" reduces; anything else = full motion
 
 function initialReduced(): boolean {
   if (typeof window === "undefined") return false;
   try {
-    const override = localStorage.getItem(MOTION_KEY);
-    if (override === "on") return false;
-    if (override === "off") return true;
+    return localStorage.getItem(MOTION_KEY) === "off";
   } catch {
-    /* storage blocked — fall through to the media query */
+    return false;
   }
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 export const motionPref = { reduced: initialReduced() };
