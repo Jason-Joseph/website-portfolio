@@ -18,6 +18,38 @@
 import { useLayoutEffect } from "react";
 import { gsap, ScrollTrigger, motionPref, themeState } from "./motion";
 
+/**
+ * Wrap every word of a headline in a `.w` span (recursing through inline
+ * elements like the italic accents) so section titles can cascade in
+ * word-by-word. Idempotent — re-running on a split block is a no-op.
+ */
+function splitWords(root: HTMLElement): void {
+  if (root.dataset.split) return;
+  root.dataset.split = "1";
+  const walk = (node: Node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent ?? "";
+      if (!text.trim()) return;
+      const frag = document.createDocumentFragment();
+      for (const part of text.split(/(\s+)/)) {
+        if (!part) continue;
+        if (/^\s+$/.test(part)) {
+          frag.appendChild(document.createTextNode(part));
+        } else {
+          const w = document.createElement("span");
+          w.className = "w";
+          w.textContent = part;
+          frag.appendChild(w);
+        }
+      }
+      node.parentNode?.replaceChild(frag, node);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      Array.from(node.childNodes).forEach(walk);
+    }
+  };
+  Array.from(root.childNodes).forEach(walk);
+}
+
 export function useReveals(ready: boolean) {
   useLayoutEffect(() => {
     if (!ready) return;
@@ -42,16 +74,26 @@ export function useReveals(ready: boolean) {
         ScrollTrigger.refresh();
         return; // everything below moves things — skipped when reduced
       }
-      // Masked line reveals, batched per closest section so lines in the
-      // same headline stagger together.
+      // Scroll progress hairline: the 2px cobalt line under the nav fills
+      // left-to-right across the whole document.
+      gsap.to(".scroll-progress i", {
+        scaleX: 1,
+        ease: "none",
+        scrollTrigger: { start: 0, end: "max", scrub: 0.4 },
+      });
+
+      // Section headlines cascade in word-by-word (still inside the line
+      // masks, so descenders stay clean).
       document.querySelectorAll<HTMLElement>("[data-lines]").forEach((block) => {
-        const inners = block.querySelectorAll(".reveal-inner");
+        const inners = block.querySelectorAll<HTMLElement>(".reveal-inner");
         if (!inners.length) return;
-        gsap.from(inners, {
+        inners.forEach(splitWords);
+        const words = block.querySelectorAll(".w");
+        gsap.from(words.length ? words : inners, {
           yPercent: 115,
-          duration: 1.1,
+          duration: 0.95,
           ease: "power4.out",
-          stagger: 0.09,
+          stagger: 0.05,
           scrollTrigger: { trigger: block, start: "top 82%" },
         });
       });

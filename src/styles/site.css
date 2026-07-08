@@ -130,6 +130,26 @@ html.has-cursor [data-cursor] {
     radial-gradient(90% 55% at 12% 112%, rgba(110, 133, 255, 0.08), transparent 62%);
 }
 
+/* --- scroll progress hairline ---------------------------------------------- */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: calc(var(--z-nav) + 1);
+  pointer-events: none;
+}
+.scroll-progress i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: background-color 0.7s ease;
+}
+
 /* --- nav ------------------------------------------------------------------ */
 
 .nav {
@@ -144,7 +164,7 @@ html.has-cursor [data-cursor] {
   gap: 1.5rem;
   padding: 1.1rem var(--gutter);
   visibility: hidden; /* revealed by GSAP once the preloader lifts */
-  transition: background-color 0.5s ease, border-color 0.5s ease;
+  transition: background-color 0.5s ease, border-color 0.5s ease, padding 0.4s ease;
   border-bottom: 1px solid transparent;
 }
 .nav.is-scrolled {
@@ -152,6 +172,7 @@ html.has-cursor [data-cursor] {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom-color: var(--hairline);
+  padding-block: 0.65rem; /* condenses once you leave the hero */
 }
 .nav-mark {
   display: inline-flex;

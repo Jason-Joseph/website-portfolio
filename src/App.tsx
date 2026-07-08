@@ -38,6 +38,9 @@ export default function App() {
       <Cursor />
 
       <Nav ready={ready} />
+      <div className="scroll-progress" aria-hidden="true">
+        <i />
+      </div>
       <main>
         <Hero ready={ready} />
         <Marquee />

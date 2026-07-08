@@ -182,6 +182,11 @@ img {
   display: block;
   will-change: transform;
 }
+/* Word-cascade units inside section headlines (created by splitWords). */
+.w {
+  display: inline-block;
+  will-change: transform;
+}
 
 /* Generic fade-up targets */
 [data-reveal] {
