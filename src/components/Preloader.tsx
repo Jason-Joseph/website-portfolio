@@ -56,7 +56,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
 
       tl.to(progress, {
         v: 100,
-        duration: 1.7,
+        duration: 1.1,
         ease: "power2.inOut",
         onUpdate: () => {
           applyStroke();
@@ -66,16 +66,16 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
         },
       })
         // the mark settles: glyphs fill, the brand dot pops in
-        .to(mark.current, { fillOpacity: 1, duration: 0.45, ease: "power2.out" }, ">-0.05")
+        .to(mark.current, { fillOpacity: 1, duration: 0.35, ease: "power2.out" }, ">-0.05")
         .fromTo(
           ".preloader-mark-dot",
           { scale: 0, transformOrigin: "center" },
-          { scale: 1, duration: 0.4, ease: "back.out(2.2)" },
+          { scale: 1, duration: 0.35, ease: "back.out(2.2)" },
           "<",
         )
-        .to(".preloader-inner", { autoAlpha: 0, duration: 0.45, ease: "power2.in" }, "+=0.25")
+        .to(".preloader-inner", { autoAlpha: 0, duration: 0.4, ease: "power2.in" }, "+=0.12")
         .add(() => done.current(), "<") // let the hero start while the curtain lifts
-        .to(root.current, { yPercent: -100, duration: 1.0, ease: "power4.inOut" }, "<");
+        .to(root.current, { yPercent: -100, duration: 0.85, ease: "power4.inOut" }, "<");
     }, root);
 
     return () => ctx.revert();
