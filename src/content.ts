@@ -53,6 +53,8 @@ export interface ProjectItem {
   /** Cover chart under /public/projects — one strong image per project. */
   image?: string;
   imageAlt?: string;
+  /** Small live-pill overlaid on the cover (e.g. "You're on it"). */
+  badge?: string;
   /** Which Work band the project renders in. */
   kind: "data" | "ai";
 }
@@ -83,8 +85,8 @@ export const content = {
     lead: "I turn messy, real-world data into insight people can act on.",
     body:
       "I'm an NUS Master of Communication graduate (Data and Communication), and a First Class LSE graduate in Data Science & Business Analytics. " +
-      "My work sits at the intersection of analytics and partnerships across fintech and banking — building dashboards, automating reporting, and digging into transaction data. " +
-      "Day to day, that means Python, SQL, and BI tools — and staying curious about what the numbers are actually trying to say.",
+      "My work spans analytics and partnerships across fintech and banking: building dashboards, automating reporting, and digging into transaction data. " +
+      "Day to day, that means Python, SQL, and BI tools, and staying curious about what the numbers are trying to say.",
   },
 
   stats: [
@@ -215,11 +217,12 @@ export const content = {
       index: "04",
       title: "This Portfolio Site",
       description:
-        "The site you're on — a three.js silk shader, GSAP scroll choreography, and React, designed and shipped end-to-end in partnership with Claude Code.",
+        "The site you're on: a three.js silk shader, GSAP scroll choreography, and React, designed and shipped end-to-end in partnership with Claude Code.",
       tags: ["Claude Code", "three.js", "React"],
-      link: "https://github.com/Jason-Joseph/website-portfolio",
+      link: "#top",
       image: "/projects/portfolio-cover.jpg",
-      imageAlt: "Hero of this portfolio — Numbers made legible, decisions made easier",
+      imageAlt: "Hero of this portfolio: numbers made legible, decisions made easier",
+      badge: "You're on it",
       kind: "ai",
     },
     {
@@ -237,7 +240,7 @@ export const content = {
       index: "06",
       title: "Kaching — Telegram Budget Tracker",
       description:
-        "A Telegram-first expense tracker: message the bot in plain language, AI parses the spend, and a live web dashboard keeps the running picture. Built for Singapore daily spending — ask me for a demo.",
+        "A Telegram-first expense tracker: message the bot in plain language, AI parses the spend, and a live web dashboard keeps the running picture. Built for Singapore daily spending. Ask me for a demo.",
       tags: ["Claude Code", "Next.js", "Telegram"],
       link: "mailto:jjtjiadi02@gmail.com?subject=Kaching%20demo",
       image: "/projects/kaching-cover.jpg",
@@ -248,7 +251,7 @@ export const content = {
       index: "07",
       title: "Agentic OS — Usage Observatory",
       description:
-        "A personal observability system for AI-assisted work: collectors and hooks feed a live HUD with a knowledge-graph globe, skill rankings, and session analytics — zero tokens spent on tracking.",
+        "The black box for my daily AI workflow. Hooks log every Claude Code session as I work, collectors distill the logs into patterns, and a live HUD surfaces skill rankings, a knowledge graph, and morning reports that tell me what to sharpen next. Tracking costs zero tokens.",
       tags: ["Claude Code", "Analytics", "Tooling"],
       link: "mailto:jjtjiadi02@gmail.com?subject=Agentic%20OS",
       image: "/projects/agentic-os-cover.jpg",
@@ -282,7 +285,7 @@ export const content = {
     github: "https://github.com/Jason-Joseph",
     location: "Singapore",
     availability:
-      "Based in Singapore — always glad to talk data, ideas, and interesting problems.",
+      "Based in Singapore, always glad to talk data, ideas, and interesting problems.",
   } satisfies Contact,
 };
 

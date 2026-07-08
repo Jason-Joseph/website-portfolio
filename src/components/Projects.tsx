@@ -5,7 +5,10 @@
 // else. Whole rows are links.
 // ---------------------------------------------------------------------------
 
+import { useEffect, useState } from "react";
 import content, { FEATURED_PROJECTS, type ProjectItem } from "../content";
+
+type ZoomTarget = { src: string; alt: string };
 
 function Arrow({ size = 22 }: { size?: number }) {
   return (
@@ -15,21 +18,46 @@ function Arrow({ size = 22 }: { size?: number }) {
   );
 }
 
-function ProjectRow({ p }: { p: ProjectItem }) {
+function ProjectRow({ p, onZoom }: { p: ProjectItem; onZoom: (z: ZoomTarget) => void }) {
+  const external = p.link.startsWith("http");
+  const zoom = () => p.image && onZoom({ src: p.image, alt: p.imageAlt ?? p.title });
   return (
     <li data-reveal>
       <a
         className="project-row"
         href={p.link}
-        target={p.link.startsWith("mailto:") ? undefined : "_blank"}
-        rel="noreferrer"
+        target={external ? "_blank" : undefined}
+        rel={external ? "noreferrer" : undefined}
         data-cursor
         data-spotlight
       >
         <span className="project-No">{p.index}</span>
         {p.image && (
-          <span className="project-thumb">
+          <span
+            className="project-thumb"
+            role="button"
+            tabIndex={0}
+            aria-label={`Zoom image: ${p.imageAlt ?? p.title}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              zoom();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                e.stopPropagation();
+                zoom();
+              }
+            }}
+          >
             <img src={p.image} alt={p.imageAlt ?? `${p.title} preview`} loading="lazy" />
+            {p.badge && (
+              <span className="thumb-badge">
+                <i aria-hidden="true" />
+                {p.badge}
+              </span>
+            )}
           </span>
         )}
         <span className="project-main">
@@ -53,6 +81,14 @@ export default function Projects() {
   const all: ProjectItem[] = content.projects;
   const dataWork = all.filter((p) => p.kind === "data").slice(0, FEATURED_PROJECTS);
   const aiWork = all.filter((p) => p.kind === "ai");
+  const [zoom, setZoom] = useState<ZoomTarget | null>(null);
+
+  useEffect(() => {
+    if (!zoom) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setZoom(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [zoom]);
 
   return (
     <section className="section projects" id="work">
@@ -79,7 +115,7 @@ export default function Projects() {
         </p>
         <ul className="project-list" data-reveal-group data-skew>
           {dataWork.map((p) => (
-            <ProjectRow p={p} key={p.index} />
+            <ProjectRow p={p} key={p.index} onZoom={setZoom} />
           ))}
         </ul>
 
@@ -88,7 +124,7 @@ export default function Projects() {
         </p>
         <ul className="project-list" data-reveal-group data-skew>
           {aiWork.map((p) => (
-            <ProjectRow p={p} key={p.index} />
+            <ProjectRow p={p} key={p.index} onZoom={setZoom} />
           ))}
         </ul>
 
@@ -112,6 +148,19 @@ export default function Projects() {
           </span>
         </a>
       </div>
+
+      {zoom && (
+        <div
+          className="lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={zoom.alt}
+          onClick={() => setZoom(null)}
+        >
+          <img src={zoom.src} alt={zoom.alt} />
+          <span className="lightbox-hint">Click anywhere or press Esc to close</span>
+        </div>
+      )}
     </section>
   );
 }
