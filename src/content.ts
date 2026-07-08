@@ -193,9 +193,9 @@ export const content = {
       index: "03",
       title: "Business Intelligence Capstone",
       description:
-        "End-to-end BI capstone from the Dibimbing.id bootcamp — built on Python, SQL, Tableau, and Power BI, from raw data to boardroom-ready dashboards.",
+        "Capstone from the Dibimbing.id BI bootcamp — RFM segmentation and cohort analysis across 1.07M UK retail transactions, from raw data to boardroom-ready dashboards.",
       tags: ["Business Intelligence", "Tableau", "Power BI"],
-      link: "https://github.com/Jason-Joseph/Projects/blob/main/Dibimbing%20B14%20Final%20Project.pdf",
+      link: "https://github.com/Jason-Joseph/Projects/blob/main/Online%20Retail%20Customer%20Analytics%20Dashboard.pdf",
     },
     {
       index: "04",
