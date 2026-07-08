@@ -50,6 +50,9 @@ export interface ProjectItem {
   tags: string[];
   /** Source/live link (GitHub repo, notebook, or deployed site). */
   link: string;
+  /** Cover chart under /public/projects — one strong image per project. */
+  image?: string;
+  imageAlt?: string;
 }
 
 export interface Contact {
@@ -180,6 +183,8 @@ export const content = {
         "Two years of U.S. flight on-time data, merged and cleaned in Python — pinpointing the best time of day, day of week, and season to fly to minimise delays, and testing whether older aircraft suffer more.",
       tags: ["Python", "pandas", "EDA"],
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Data%20Expo%202002-2003%20Airline%20Time%20Data.ipynb",
+      image: "/projects/q1_delay_by_day.png",
+      imageAlt: "Bar chart of average U.S. flight delay by day of week",
     },
     {
       index: "02",
@@ -188,6 +193,8 @@ export const content = {
         "The Kaggle Superstore dataset, cleaned and explored in Python — breaking down sales and profit by category, region, and segment to surface where to double down and where to cut back.",
       tags: ["Python", "pandas", "Retail Analytics"],
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Kaggle%20Superstore%20Data.ipynb",
+      image: "/projects/best_selling_products.png",
+      imageAlt: "Horizontal bar chart of best-selling Superstore products",
     },
     {
       index: "03",
@@ -196,17 +203,27 @@ export const content = {
         "Capstone from the Dibimbing.id BI bootcamp — RFM segmentation and cohort analysis across 1.07M UK retail transactions, from raw data to boardroom-ready dashboards.",
       tags: ["Business Intelligence", "Tableau", "Power BI"],
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Online%20Retail%20Customer%20Analytics%20Dashboard.pdf",
+      image: "/projects/rfm_dashboard.jpg",
+      imageAlt: "RFM customer-segmentation dashboard",
     },
     {
       index: "04",
-      title: "Statistical Modelling in R",
+      title: "Customer Churn Clustering & Classification",
       description:
-        "University coursework in R spanning regression, classification, and unsupervised learning on real datasets.",
-      tags: ["R", "Regression", "Clustering"],
-      link: "https://github.com/Jason-Joseph/Projects",
+        "A two-part telco churn study in R — K-means and hierarchical clustering to find the segments, then logistic regression, decision trees, and random forests to predict who leaves.",
+      tags: ["R", "Clustering", "Classification"],
+      link: "https://github.com/Jason-Joseph/Projects/blob/main/Customer%20Churn%20Clustering%20and%20Classification.R",
     },
     {
       index: "05",
+      title: "Vehicle Price Regression Analysis",
+      description:
+        "Car-price prediction in R — multiple linear regression, CART, and random forests with cost-complexity pruning, benchmarked head-to-head.",
+      tags: ["R", "Regression", "Random Forest"],
+      link: "https://github.com/Jason-Joseph/Projects/blob/main/Vehicle%20Price%20Regression%20Analysis.R",
+    },
+    {
+      index: "06",
       title: "Personal Portfolio Site",
       description:
         "An earlier personal portfolio — designed, built, and shipped to production on Vercel.",

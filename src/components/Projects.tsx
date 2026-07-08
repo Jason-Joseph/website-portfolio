@@ -50,6 +50,11 @@ export default function Projects() {
                 data-spotlight
               >
                 <span className="project-No">{p.index}</span>
+                {p.image && (
+                  <span className="project-thumb">
+                    <img src={p.image} alt={p.imageAlt ?? `${p.title} preview`} loading="lazy" />
+                  </span>
+                )}
                 <span className="project-main">
                   <span className="project-title">{p.title}</span>
                   <span className="project-desc">{p.description}</span>
