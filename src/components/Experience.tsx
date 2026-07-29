@@ -12,11 +12,11 @@ export default function Experience() {
   return (
     <section className="section experience" id="experience">
       <span className="ghost-no" data-parallax="0.22" aria-hidden="true">
-        03
+        04
       </span>
       <div className="container">
         <p className="label">
-          <em>03</em> Experience
+          <em>04</em> Experience
         </p>
 
         <ol className="xp-list">

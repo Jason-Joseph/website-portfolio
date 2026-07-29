@@ -32,11 +32,11 @@ export default function Contact() {
   return (
     <section className="section contact" id="contact">
       <span className="ghost-no" data-parallax="0.22" aria-hidden="true">
-        04
+        05
       </span>
       <div className="container">
         <p className="label">
-          <em>04</em> Contact
+          <em>05</em> Contact
         </p>
 
         <h2 className="display contact-title" data-lines data-drift="-0.5">

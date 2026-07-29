@@ -55,7 +55,11 @@ Source: `github.com/Jason-Joseph/Projects` → `Data Expo 2002-2003 Airline Time
 
 **Reduced motion:** render the final state (beat 4) as a static chart with all captions resolved. No pin, no scrub.
 
-**Mobile (≤900px):** no pin. The four beats play as a single entrance sequence when the section scrolls into view. Below `640px` the per-bar value labels are hidden (day labels and the caption stay); the chart height reduces to ~110px.
+**Mobile (≤900px):** no pin. The four beats play as a single entrance sequence when the section scrolls into view.
+
+> **Built deviation:** the spec planned to hide per-bar value labels below `640px`. Verified at 390×844 they stay clearly legible and the chart does not crowd, so the labels were **kept** — the precaution proved unnecessary and hiding them would have discarded information for no gain.
+
+> **Built deviation:** the `.ghost-no` background numeral is **hidden** in this section. It collided with the large delay readout at top-right, and relocating it only pushed the collision onto the notebook link. The section already carries its own large figures plus a numbered axis, so the oversized numeral was redundant.
 
 **Performance budget:** desktop Lighthouse must stay >= 95. The section adds no images and no libraries; the main risk is added DOM/pin work, so re-measure after implementation.
 

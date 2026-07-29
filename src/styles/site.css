@@ -402,6 +402,200 @@ html.has-cursor [data-cursor] {
   white-space: nowrap; /* hand-broken lines must never rewrap inside a mask */
 }
 
+/* --- the signal (scroll-driven data story) ------------------------------------ */
+
+.signal {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.signal-stage {
+  --warm: #e2705f;
+}
+.signal-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  min-height: clamp(6rem, 14vh, 8.5rem);
+}
+.signal-cap {
+  font-size: clamp(1.4rem, 3vw, 2.5rem);
+  line-height: 1.18;
+  max-width: 66%;
+  text-wrap: balance;
+}
+/* No ghost numeral here. This section already carries its own large figures
+   (the flight count, then the delay readout) plus a numbered axis; the
+   oversized background numeral only competes with them. */
+.signal .ghost-no {
+  display: none;
+}
+.signal-cap small {
+  display: block;
+  font-family: var(--sans);
+  font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+  color: var(--muted);
+  margin-top: 0.9rem;
+}
+.signal-num {
+  flex: none;
+  text-align: right;
+}
+.signal-num-value {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  line-height: 1;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+  transition: color 0.5s ease;
+}
+.signal-stage[data-beat="2"] .signal-num-value {
+  color: var(--warm);
+}
+.signal-stage[data-beat="3"] .signal-num-value {
+  color: var(--accent);
+}
+.signal-num-label {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-top: 0.5rem;
+}
+
+.signal-plot {
+  position: relative;
+  height: clamp(120px, 26vh, 220px);
+  margin-top: clamp(1.5rem, 4vh, 2.6rem);
+}
+.signal-grid span {
+  position: absolute;
+  left: 2.2rem;
+  right: 0;
+  height: 1px;
+  background: var(--hairline);
+}
+.signal-grid b {
+  position: absolute;
+  left: -2.2rem;
+  transform: translateY(50%);
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: var(--faint);
+}
+.signal-cols {
+  position: absolute;
+  inset: 0 0 0 2.6rem;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(0.6rem, 2.4vw, 2rem);
+  list-style: none;
+}
+.signal-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+}
+.signal-val {
+  text-align: center;
+  font-size: 0.66rem;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.4rem;
+  opacity: 0;
+  transition: opacity 0.5s ease, color 0.5s ease;
+}
+.signal-val[data-on="true"] {
+  opacity: 1;
+}
+.signal-val[data-lit="true"] {
+  color: var(--fg);
+}
+/* Bars grow from a TRUE ZERO BASELINE — near-level heights are the finding. */
+.signal-bar {
+  display: block;
+  width: 100%;
+  background: var(--hairline-strong);
+  border-radius: 3px 3px 0 0;
+  transition: height 0.9s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.55s ease,
+    opacity 0.55s ease;
+}
+.signal-bar[data-dim="true"] {
+  opacity: 0.38;
+}
+.signal-bar[data-hot="true"] {
+  background: var(--warm);
+}
+.signal-bar[data-cool="true"] {
+  background: var(--accent);
+}
+.signal-axis {
+  display: flex;
+  gap: clamp(0.6rem, 2.4vw, 2rem);
+  margin: 0.6rem 0 0 2.6rem;
+  list-style: none;
+}
+.signal-axis li {
+  flex: 1;
+  text-align: center;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  transition: color 0.5s ease;
+}
+.signal-axis li[data-lit="true"] {
+  color: var(--fg);
+}
+
+.signal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1rem, 3vw, 2.5rem);
+  margin-top: clamp(1.4rem, 4vh, 2.2rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--hairline);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  pointer-events: none;
+}
+.signal-foot[data-on="true"] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.signal-method {
+  font-size: 0.72rem;
+  color: var(--faint);
+  max-width: 34rem;
+  line-height: 1.6;
+}
+.signal-foot a {
+  flex: none;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+  padding: 0.55rem 1.1rem;
+  white-space: nowrap;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.signal-foot a:hover {
+  background: var(--accent-deep);
+  color: #fff;
+}
+
 /* --- projects ----------------------------------------------------------------- */
 
 .projects {

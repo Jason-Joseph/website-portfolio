@@ -96,6 +96,38 @@ export const content = {
     { value: "First Class", label: "honours, LSE" },
   ] satisfies StatItem[],
 
+  // ---------------------------------------------------------------------
+  // "The Signal" — the scroll-driven data story. Every figure below is
+  // traceable to the public notebook; see
+  // docs/superpowers/specs/2026-07-09-the-signal-design.md for provenance.
+  // Minutes = mean(ArrDelay) + mean(DepDelay) per DayOfWeek over 11.76M rows.
+  // Mon–Fri exact from the notebook; Sat/Sun read off q1_delay_by_day.png
+  // (that notebook cell used .head() and truncated those rows).
+  // Do NOT reshape these into a more dramatic story: the ~6 minute spread
+  // between best and worst IS the finding.
+  // ---------------------------------------------------------------------
+  signal: {
+    totalFlights: 11759899,
+    days: [
+      { day: "Mon", minutes: 44.4 },
+      { day: "Tue", minutes: 42.3 },
+      { day: "Wed", minutes: 41.1 },
+      { day: "Thu", minutes: 44.4 },
+      { day: "Fri", minutes: 44.9 },
+      { day: "Sat", minutes: 39.0 },
+      { day: "Sun", minutes: 43.7 },
+    ],
+    /** Indices into `days` for the two highlighted beats. */
+    worstIndex: 4,
+    bestIndex: 5,
+    /** Y-axis ceiling. Baseline is always zero — never truncate it. */
+    axisMax: 50,
+    method:
+      "Python, pandas. 11.7M rows cleaned and grouped. Four models benchmarked, Random Forest best at R² 0.975.",
+    notebook:
+      "https://github.com/Jason-Joseph/Projects/blob/main/Data%20Expo%202002-2003%20Airline%20Time%20Data.ipynb",
+  },
+
   experience: [
     {
       company: "KPay Merchant Service (Singapore) Pte. Ltd.",

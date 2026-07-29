@@ -71,11 +71,11 @@ export default function About({ ready }: { ready: boolean }) {
   return (
     <section className="section about" id="about" ref={root}>
       <span className="ghost-no" data-parallax="0.22" aria-hidden="true">
-        02
+        03
       </span>
       <div className="container">
         <p className="label">
-          <em>02</em> About
+          <em>03</em> About
         </p>
 
         <div className="about-grid">

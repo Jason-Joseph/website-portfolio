@@ -18,6 +18,7 @@ import Cursor from "./components/Cursor";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
 import Marquee from "./components/Marquee";
+import Signal from "./components/Signal";
 import Projects from "./components/Projects";
 import About from "./components/About";
 import Experience from "./components/Experience";
@@ -44,6 +45,7 @@ export default function App() {
       <main>
         <Hero ready={ready} />
         <Marquee />
+        <Signal ready={ready} />
         <Projects />
         <About ready={ready} />
         <Experience />

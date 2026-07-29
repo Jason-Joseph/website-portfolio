@@ -93,11 +93,11 @@ export default function Projects() {
   return (
     <section className="section projects" id="work">
       <span className="ghost-no" data-parallax="0.22" aria-hidden="true">
-        01
+        02
       </span>
       <div className="container">
         <p className="label">
-          <em>01</em> Selected work
+          <em>02</em> Selected work
         </p>
         <h2 className="display section-title" data-lines data-drift="0.6">
           <span className="reveal-line">

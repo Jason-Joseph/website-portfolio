@@ -188,6 +188,20 @@ img {
   will-change: transform;
 }
 
+/* Visually hidden, still read aloud. Used for the data-story table so screen
+   readers get the whole finding at once instead of animated beats. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Generic fade-up targets */
 [data-reveal] {
   will-change: transform, opacity;
