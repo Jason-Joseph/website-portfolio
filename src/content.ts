@@ -57,6 +57,8 @@ export interface ProjectItem {
   badge?: string;
   /** Which Work band the project renders in. */
   kind: "data" | "ai";
+  /** Told in full by the <Signal> featured story, so it renders no row. */
+  story?: boolean;
 }
 
 export interface Contact {
@@ -222,6 +224,7 @@ export const content = {
       image: "/projects/q1_delay_by_day.png",
       imageAlt: "Bar chart of average U.S. flight delay by day of week",
       kind: "data",
+      story: true,
     },
     {
       index: "02",

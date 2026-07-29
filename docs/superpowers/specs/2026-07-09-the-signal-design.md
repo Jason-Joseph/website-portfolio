@@ -31,7 +31,14 @@ Source: `github.com/Jason-Joseph/Projects` → `Data Expo 2002-2003 Airline Time
 
 ## Section design
 
-**Name:** "The Signal". **Placement:** new section between `Marquee` and `Projects`, numbered `01`.
+**Name:** "The Signal".
+
+**Placement (revised after first build):** originally shipped as its own section between `Marquee` and `Projects`, numbered `01`. On review that read as a stray interlude, and it duplicated the airline project that also appeared as a row below it. It now renders **inside the Work section as the featured piece**, directly under the section title and above the project rows, introduced by a "Featured analysis · Airline delays, 2002–2003" eyebrow. Consequences:
+
+- Sections return to `01`–`04` (Projects, About, Experience, Contact); Signal has no number of its own.
+- `ProjectItem` gains `story?: boolean`; the airline entry sets it and is filtered out of the rendered rows, so one project gets exactly one treatment.
+- `Projects` now takes `ready` and mounts `<Signal ready={ready} />`; `App.tsx` no longer mounts Signal directly.
+- The story now falls inside the dark→light theme band, so it plays out on the porcelain background. That suits a chart, but bar fills had to become **opaque** (`--bar`, per theme) — the previous `--hairline-strong` alpha let the silk backdrop show through the bars and washed them out.
 
 **Four beats**, pinned for roughly one extra viewport of scroll:
 

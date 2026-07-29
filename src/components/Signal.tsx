@@ -39,7 +39,7 @@ function beatFor(progress: number): number {
 }
 
 export default function Signal({ ready }: { ready: boolean }) {
-  const root = useRef<HTMLElement>(null);
+  const root = useRef<HTMLDivElement>(null);
   const counter = useRef<HTMLSpanElement>(null);
   // Reduced motion opens on the resolved state — the whole story, no movement.
   const [beat, setBeat] = useState(() => (motionPref.reduced ? 3 : 0));
@@ -91,16 +91,12 @@ export default function Signal({ ready }: { ready: boolean }) {
   const best = days[bestIndex].minutes.toFixed(1);
 
   return (
-    <section className="section signal" id="signal" ref={root}>
-      <span className="ghost-no" data-parallax="0.22" aria-hidden="true">
-        01
-      </span>
-      <div className="container">
-        <p className="label">
-          <em>01</em> The signal
-        </p>
+    <div className="signal" id="signal" ref={root}>
+      <p className="signal-eyebrow">
+        <span>Featured analysis</span> Airline delays, 2002&ndash;2003
+      </p>
 
-        <div className="signal-stage" data-beat={beat}>
+      <div className="signal-stage" data-beat={beat}>
           <div className="signal-row">
             <h2 className="display signal-cap">{CAPTIONS[beat]}</h2>
             <p className="signal-num">
@@ -191,6 +187,5 @@ export default function Signal({ ready }: { ready: boolean }) {
           </div>
         </div>
       </div>
-    </section>
   );
 }

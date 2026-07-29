@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from "react";
 import content, { FEATURED_PROJECTS, type ProjectItem } from "../content";
+import Signal from "./Signal";
 
 type ZoomTarget = { src: string; alt: string };
 
@@ -77,9 +78,11 @@ function ProjectRow({ p, onZoom }: { p: ProjectItem; onZoom: (z: ZoomTarget) => 
   );
 }
 
-export default function Projects() {
+export default function Projects({ ready }: { ready: boolean }) {
   const all: ProjectItem[] = content.projects;
-  const dataWork = all.filter((p) => p.kind === "data").slice(0, FEATURED_PROJECTS);
+  // The `story` project is told in full by <Signal>, so it never also
+  // appears as a row — one project, one treatment.
+  const dataWork = all.filter((p) => p.kind === "data" && !p.story).slice(0, FEATURED_PROJECTS);
   const aiWork = all.filter((p) => p.kind === "ai");
   const [zoom, setZoom] = useState<ZoomTarget | null>(null);
 
@@ -93,11 +96,11 @@ export default function Projects() {
   return (
     <section className="section projects" id="work">
       <span className="ghost-no" data-parallax="0.22" aria-hidden="true">
-        02
+        01
       </span>
       <div className="container">
         <p className="label">
-          <em>02</em> Selected work
+          <em>01</em> Selected work
         </p>
         <h2 className="display section-title" data-lines data-drift="0.6">
           <span className="reveal-line">
@@ -109,6 +112,8 @@ export default function Projects() {
             <span className="reveal-inner">to the final call.</span>
           </span>
         </h2>
+
+        <Signal ready={ready} />
 
         <p className="work-band-label" data-reveal>
           Data work

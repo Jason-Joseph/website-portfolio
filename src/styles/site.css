@@ -404,14 +404,40 @@ html.has-cursor [data-cursor] {
 
 /* --- the signal (scroll-driven data story) ------------------------------------ */
 
+/* The featured story sits INSIDE the Work section, above the project rows,
+   so it reads as the headline piece of work rather than a stray interlude.
+   It still fills the viewport while pinned. */
 .signal {
-  min-height: 100svh;
+  min-height: 82svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-bottom: clamp(2.5rem, 7vh, 5rem);
+}
+.signal-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: clamp(1.2rem, 3vh, 2rem);
+}
+.signal-eyebrow span {
+  color: var(--accent);
+  border: 1px solid var(--accent-soft);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
 }
 .signal-stage {
   --warm: #e2705f;
+  /* Opaque on purpose: an alpha fill lets the silk backdrop show through the
+     bars, which reads as washed-out and muddies the comparison. */
+  --bar: #2b3350;
+}
+body.theme-light .signal-stage {
+  --bar: #c3c8d6;
 }
 .signal-row {
   display: flex;
@@ -425,12 +451,6 @@ html.has-cursor [data-cursor] {
   line-height: 1.18;
   max-width: 66%;
   text-wrap: balance;
-}
-/* No ghost numeral here. This section already carries its own large figures
-   (the flight count, then the delay readout) plus a numbered axis; the
-   oversized background numeral only competes with them. */
-.signal .ghost-no {
-  display: none;
 }
 .signal-cap small {
   display: block;
@@ -522,7 +542,7 @@ html.has-cursor [data-cursor] {
 .signal-bar {
   display: block;
   width: 100%;
-  background: var(--hairline-strong);
+  background: var(--bar);
   border-radius: 3px 3px 0 0;
   transition: height 0.9s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.55s ease,
     opacity 0.55s ease;
