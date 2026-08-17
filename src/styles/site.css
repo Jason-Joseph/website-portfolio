@@ -760,6 +760,11 @@ body.theme-light .signal-stage {
 .project-row:hover .project-thumb img {
   transform: scale(1.07);
 }
+/* Coverless rows: drop the thumbnail track so the title keeps the wide
+   column instead of being squeezed into the 11rem image slot. */
+.project-row-plain {
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(0, 14rem);
+}
 .project-row:hover {
   background: var(--glass);
 }

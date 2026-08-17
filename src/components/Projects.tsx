@@ -25,7 +25,10 @@ function ProjectRow({ p, onZoom }: { p: ProjectItem; onZoom: (z: ZoomTarget) => 
   return (
     <li data-reveal>
       <a
-        className="project-row"
+        // A row without a cover renders one fewer grid child, so it needs the
+        // three-column track list — otherwise the title lands in the thumbnail
+        // slot and the whole row shifts left.
+        className={p.image ? "project-row" : "project-row project-row-plain"}
         href={p.link}
         target={external ? "_blank" : undefined}
         rel={external ? "noreferrer" : undefined}
