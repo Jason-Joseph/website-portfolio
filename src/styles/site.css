@@ -242,6 +242,46 @@ html.has-cursor [data-cursor] {
   color: var(--accent);
 }
 
+/* --- nav: mobile menu ------------------------------------------------------ */
+/* Hidden entirely above 540px — .nav-links already carries desktop nav there. */
+
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  position: relative;
+  /* Must out-stack .nav-mobile: an explicit z-index on a sibling always
+     paints above siblings left at the implicit z-index:auto, regardless of
+     DOM order — so the close (X) button needs one too, or the open panel
+     covers it. */
+  z-index: 2;
+}
+.nav-burger span {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  background: var(--fg);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.nav-burger[data-open="true"] span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+.nav-burger[data-open="true"] span:nth-child(2) {
+  opacity: 0;
+}
+.nav-burger[data-open="true"] span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+.nav-mobile {
+  display: none;
+}
+
 /* --- hero ------------------------------------------------------------------ */
 
 .hero {
@@ -1416,6 +1456,75 @@ body.theme-light .signal-stage {
 @media (max-width: 540px) {
   .nav-links {
     display: none;
+  }
+  .nav-burger {
+    display: flex;
+  }
+  .nav-mobile {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2.4rem;
+    position: fixed;
+    inset: 0;
+    padding: var(--gutter);
+    background: var(--bg);
+    z-index: 1;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s ease, background-color 0.7s ease;
+  }
+  .nav-mobile[data-open="true"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .nav-mobile-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .nav-mobile-links a {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 11vw, 2.8rem);
+    color: var(--fg);
+  }
+  .nav-mobile-index {
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+  .nav-mobile-cta {
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    word-break: break-all;
+  }
+  /* The featured story: side-by-side caption + number is too tight on
+     phones, so it stacks like every other flex-row on this breakpoint. */
+  .signal-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    min-height: 0;
+  }
+  .signal-cap {
+    max-width: 100%;
+  }
+  .signal-num {
+    text-align: left;
+  }
+  .signal-foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
   .hero-title {
     font-size: clamp(1.2rem, 6.4vw, 2rem);
