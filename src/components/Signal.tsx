@@ -163,21 +163,27 @@ export default function Signal({ ready }: { ready: boolean }) {
             ))}
           </ul>
 
-          {/* Screen readers get the whole finding as a table, not as beats. */}
-          <table className="sr-only">
-            <caption>
-              Average total flight delay by day of week, from {totalFlights.toLocaleString("en-US")}{" "}
-              US domestic flights, 2002 to 2003
-            </caption>
-            <tbody>
-              {days.map((d) => (
-                <tr key={d.day}>
-                  <th scope="row">{d.day}</th>
-                  <td>{d.minutes.toFixed(1)} minutes</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* Screen readers get the whole finding as a table, not as beats.
+              The WRAPPER carries .sr-only, not the table: a table's used width
+              can never fall below its min-content width, so width:1px is
+              ignored, the table stays ~685px wide, and it widens the whole
+              document on a phone. A block container clips it properly. */}
+          <div className="sr-only">
+            <table>
+              <caption>
+                Average total flight delay by day of week, from{" "}
+                {totalFlights.toLocaleString("en-US")} US domestic flights, 2002 to 2003
+              </caption>
+              <tbody>
+                {days.map((d) => (
+                  <tr key={d.day}>
+                    <th scope="row">{d.day}</th>
+                    <td>{d.minutes.toFixed(1)} minutes</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <div className="signal-foot" data-on={beat === 3}>
             <p className="signal-method">{method}</p>

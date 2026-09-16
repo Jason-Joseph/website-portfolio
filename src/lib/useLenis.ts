@@ -9,6 +9,22 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger, motionPref } from "./motion";
 
+// The live instance, so overlays can suspend scrolling. `body { overflow:
+// hidden }` cannot stop Lenis: it runs its own rAF loop and moves the page
+// itself, so the document keeps scrolling behind a full-screen panel.
+let instance: Lenis | null = null;
+
+/**
+ * Freeze or resume smooth scrolling while a full-screen overlay is open.
+ * No-op under prefers-reduced-motion, where native scrolling is in use and
+ * the overlay's `body { overflow: hidden }` already holds the page still.
+ */
+export function setScrollLocked(locked: boolean): void {
+  if (!instance) return;
+  if (locked) instance.stop();
+  else instance.start();
+}
+
 export function useLenis() {
   useEffect(() => {
     // The browser re-applying a stale scroll position after load fights both
@@ -24,6 +40,7 @@ export function useLenis() {
       smoothWheel: true,
     });
     lenis.on("scroll", ScrollTrigger.update);
+    instance = lenis;
 
     const tick = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(tick);
@@ -31,6 +48,7 @@ export function useLenis() {
 
     return () => {
       gsap.ticker.remove(tick);
+      instance = null;
       lenis.destroy();
     };
   }, []);

@@ -158,19 +158,23 @@ export function useReveals(ready: boolean) {
       });
 
       // Horizontal scrub drift — section titles glide sideways as the page
-      // moves so big type is never frozen in place.
-      document.querySelectorAll<HTMLElement>("[data-drift]").forEach((el) => {
-        const dir = parseFloat(el.dataset.drift || "1");
-        gsap.fromTo(
-          el,
-          { x: 70 * dir },
-          {
-            x: -70 * dir,
-            ease: "none",
-            scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true },
-          },
-        );
-      });
+      // moves so big type is never frozen in place. Desktop only: the travel
+      // is a fixed ±70px, a graceful nudge across a 1440px canvas but enough
+      // to shove a headline clean off both edges of a 390px phone.
+      if (!window.matchMedia("(max-width: 900px)").matches) {
+        document.querySelectorAll<HTMLElement>("[data-drift]").forEach((el) => {
+          const dir = parseFloat(el.dataset.drift || "1");
+          gsap.fromTo(
+            el,
+            { x: 70 * dir },
+            {
+              x: -70 * dir,
+              ease: "none",
+              scrollTrigger: { trigger: el, start: "top bottom", end: "bottom top", scrub: true },
+            },
+          );
+        });
+      }
 
       // Count-up: any [data-count] whose text contains digits ticks from 0,
       // preserving prefix/suffix and thousands separators ("10,000+", "~21%").

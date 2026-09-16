@@ -1451,6 +1451,15 @@ body.theme-light .signal-stage {
   .ghost-no {
     font-size: clamp(6rem, 26vw, 9rem);
   }
+  /* Hand-broken headline lines are set nowrap so they never rewrap inside a
+     mask. That guarantee becomes overflow on a phone, where one line is wider
+     than the screen — and .reveal-line is overflow:hidden with auto height, so
+     letting it wrap just makes the mask taller. */
+  .section-title,
+  .contact-title {
+    white-space: normal;
+    text-wrap: balance;
+  }
 }
 
 @media (max-width: 540px) {
@@ -1534,5 +1543,91 @@ body.theme-light .signal-stage {
   }
   .contact-rail {
     grid-template-columns: 1fr;
+  }
+  /* The burger already opens a panel carrying the email, so the pill is a
+     second route to the same place — and at this width it crowds the mark and
+     the burger it sits between. One nav, one CTA. */
+  .nav-cta {
+    display: none;
+  }
+  /* The eyebrow's pill and its date sit on one line until the pill wraps and
+     the two collide. Let the row break instead. */
+  .signal-eyebrow {
+    flex-wrap: wrap;
+    gap: 0.55rem 0.8rem;
+  }
+  /* Project rows stop being a grid here. Squeezing the desktop track list into
+     a phone leaves the index numeral stranded in its own narrow column beside
+     the cover, and the arrow marooned at the far right. Stacked, the row reads
+     in its natural order: index, cover, title, tags. */
+  .project-row,
+  .project-row-plain {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+  }
+  .project-No,
+  .project-thumb,
+  .project-main,
+  .project-side {
+    grid-column: 1;
+  }
+  .project-No {
+    margin-bottom: -0.5rem; /* sits as a label on the title, not a row of its own */
+  }
+  .project-thumb {
+    max-width: 100%;
+  }
+  .project-side {
+    align-items: center;
+  }
+}
+
+/* --- touch input ------------------------------------------------------------------ */
+
+/* Keyed on the input device, not the screen: a touch laptop and a tablet need
+   the same finger-sized targets a phone does. Each rule buys height with
+   padding and gives it back with a negative margin, so nothing reflows —
+   the hit area grows, the composition does not move. */
+@media (pointer: coarse) {
+  .nav-mark,
+  .hero-scroll,
+  .footer-motion,
+  .footer-row a {
+    padding-block: 0.85rem;
+    margin-block: -0.85rem;
+  }
+  .nav-burger {
+    width: 44px;
+    height: 44px;
+  }
+  .signal-foot a,
+  .nav-cta {
+    padding-block: 0.85rem;
+  }
+  /* Inline links in the contact rail sit at their 19px text height. Make each
+     one a full-width row so the whole line is tappable, not just the glyphs. */
+  .contact-rail a,
+  .contact-loc {
+    display: block;
+    padding-block: 0.7rem;
+    margin-block: -0.35rem;
+  }
+  /* Notch and home-indicator insets. max() keeps the designed padding on any
+     device that reports a zero inset, so nothing changes off a notched phone. */
+  .nav,
+  .nav-mobile {
+    padding-top: max(1.1rem, env(safe-area-inset-top));
+    padding-left: max(var(--gutter), env(safe-area-inset-left));
+    padding-right: max(var(--gutter), env(safe-area-inset-right));
+  }
+  .footer {
+    padding-bottom: max(1.6rem, env(safe-area-inset-bottom));
+  }
+  /* Hover is the only thing that reveals these on a pointer device, and a
+     finger never hovers — show the resting state outright. */
+  .project-row .project-side svg,
+  .github-card-arrow {
+    opacity: 1;
   }
 }

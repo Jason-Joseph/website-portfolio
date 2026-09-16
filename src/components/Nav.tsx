@@ -6,6 +6,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { gsap, motionPref } from "../lib/motion";
+import { setScrollLocked } from "../lib/useLenis";
 import content from "../content";
 
 const LINKS = [
@@ -28,9 +29,14 @@ export default function Nav({ ready }: { ready: boolean }) {
   }, []);
 
   useEffect(() => {
+    // Both locks are needed: body overflow covers the reduced-motion path
+    // (native scrolling), while Lenis runs its own rAF loop that ignores
+    // overflow entirely and would keep scrolling the page behind the panel.
     document.body.style.overflow = menuOpen ? "hidden" : "";
+    setScrollLocked(menuOpen);
     return () => {
       document.body.style.overflow = "";
+      setScrollLocked(false);
     };
   }, [menuOpen]);
 
