@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>JJT · Series 2026 — v2 mockup A: The Deck</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --pack: #ffe14a;          /* booster-pack wrapper: the ground */
+    --ink: #141414;
+    --stock: #fbfaf5;         /* card stock */
+    --stock-edge: #e9e6da;
+    --data: #0f7e69;          /* energy types */
+    --ai: #6b4bff;
+    --career: #ef4129;
+    --edu: #1d2a6e;
+    --rare: #141414;
+    --radius: 18px;
+    --display: "Bricolage Grotesque", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    --gutter: clamp(1rem, 4vw, 3.5rem);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--pack);
+    color: var(--ink);
+    font-family: var(--display);
+    font-optical-sizing: auto;
+    font-size: 16px;
+    line-height: 1.55;
+    overflow-x: clip;
+  }
+  ::selection { background: var(--ink); color: var(--pack); }
+  a { color: inherit; }
+  img { max-width: 100%; display: block; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 6px; }
+
+  /* Wrapper print: a halftone dot field across the whole pack, like the
+     printed foil wrapper the cards come out of. */
+  body::before {
+    content: "";
+    position: fixed; inset: 0; z-index: -1;
+    background-image: radial-gradient(rgba(20,20,20,.09) 1.2px, transparent 1.4px);
+    background-size: 14px 14px;
+    pointer-events: none;
+  }
+
+  /* --- top bar: the set's printed header strip -------------------------- */
+  .bar {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: max(.8rem, env(safe-area-inset-top)) var(--gutter) .8rem;
+    background: var(--ink); color: var(--pack);
+  }
+  .set-mark { display: flex; align-items: center; gap: .6rem; font-weight: 800; letter-spacing: .02em; text-decoration: none; }
+  .set-mark svg { flex: none; }
+  .set-mark small { font-family: var(--mono); font-weight: 500; font-size: .7rem; opacity: .7; }
+  .bar nav { display: flex; gap: .25rem; overflow-x: auto; scrollbar-width: none; }
+  .bar nav a {
+    font-family: var(--mono); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    text-decoration: none; padding: .55rem .8rem; border-radius: 999px; white-space: nowrap;
+  }
+  .bar nav a:hover { background: var(--pack); color: var(--ink); }
+
+  /* --- hero: the opened pack ------------------------------------------- */
+  .hero {
+    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center; gap: clamp(1.5rem, 4vw, 4rem);
+    min-height: calc(100svh - 56px);
+    padding: clamp(2rem, 6vh, 4rem) var(--gutter) clamp(3rem, 8vh, 5rem);
+    /* Clip at the screen edge, not at the hand: a rotated outer card pokes
+       past the viewport, which on a phone widens the whole document. */
+    overflow-x: clip;
+  }
+  h1 {
+    font-weight: 800; font-size: clamp(2.9rem, 8.4vw, 7.4rem);
+    line-height: .9; letter-spacing: -.035em;
+    text-wrap: balance;
+  }
+  h1 .second { display: block; color: var(--stock); -webkit-text-stroke: 2px var(--ink); paint-order: stroke fill; }
+  .tagline { max-width: 34rem; font-size: clamp(1.05rem, 1.6vw, 1.25rem); margin-top: 1.5rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 2rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: .55rem; min-height: 48px;
+    padding: .75rem 1.25rem; border-radius: 12px; border: 2.5px solid var(--ink);
+    font-family: var(--mono); font-weight: 700; font-size: .82rem; letter-spacing: .04em; text-transform: uppercase;
+    text-decoration: none; background: var(--stock); color: var(--ink);
+    box-shadow: 0 5px 0 var(--ink); transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover { transform: translateY(2px); box-shadow: 0 3px 0 var(--ink); }
+  .btn:active { transform: translateY(5px); box-shadow: 0 0 0 var(--ink); }
+  .btn.primary { background: var(--ink); color: var(--pack); }
+  .schools { font-family: var(--mono); font-weight: 700; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; margin-top: 1.6rem; }
+  .schools b { background: var(--ink); color: var(--pack); padding: .15rem .45rem; border-radius: 4px; }
+
+  /* The fanned hand. Five cards; the character card leads. */
+  .hand { position: relative; height: clamp(420px, 62vh, 620px); display: grid; place-items: center; }
+  .hand .card { position: absolute; width: min(300px, 68vw); }
+  .hand .card:nth-child(1) { --fan: -24deg; --fx: -38%; --fy: 6%; z-index: 1; }
+  .hand .card:nth-child(2) { --fan: -12deg; --fx: -19%; --fy: 1%; z-index: 2; }
+  .hand .card:nth-child(4) { --fan: 12deg;  --fx: 19%;  --fy: 1%; z-index: 2; }
+  .hand .card:nth-child(5) { --fan: 24deg;  --fx: 38%;  --fy: 6%; z-index: 1; }
+  .hand .card:nth-child(3) { --fan: 0deg; --fx: 0; --fy: -3%; z-index: 5; }
+  .hand .card { transform: translate(var(--fx), var(--fy)) rotate(var(--fan)); transition: transform .5s cubic-bezier(.2,.9,.25,1.2); }
+  .hand:hover .card:not(:nth-child(3)) { --fy: 9%; }
+
+  /* --- the card itself ------------------------------------------------- */
+  .card {
+    --type: var(--data);
+    --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 50%; --glare: 0;
+    position: relative; aspect-ratio: 63 / 88;
+    perspective: 1200px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card[data-type="ai"] { --type: var(--ai); }
+  .card[data-type="career"] { --type: var(--career); }
+  .card[data-type="edu"] { --type: var(--edu); }
+  .card[data-type="rare"] { --type: var(--rare); }
+  .card-inner {
+    position: absolute; inset: 0; transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateY(calc(var(--ry) + var(--flip, 0deg)));
+    transition: transform .6s cubic-bezier(.2,.8,.2,1);
+  }
+  .card.is-flipped { --flip: 180deg; }
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: var(--radius); background: var(--stock);
+    border: 3px solid var(--ink);
+    box-shadow: 0 1px 0 var(--stock-edge), 0 14px 30px -10px rgba(20,20,20,.45);
+    overflow: hidden; display: flex; flex-direction: column;
+  }
+  .face.back { transform: rotateY(180deg); background: var(--type); color: var(--stock); }
+  /* Inner frame in the card's energy color, like a printed border. */
+  .face.front { padding: 9px; background: var(--type); }
+  .front-body {
+    flex: 1; display: flex; flex-direction: column; min-height: 0;
+    background: var(--stock); border-radius: 10px; overflow: hidden; border: 2px solid var(--ink);
+  }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; padding: .55rem .7rem .4rem; }
+  .card-name { font-weight: 800; font-size: 1.02rem; line-height: 1.12; letter-spacing: -.01em; }
+  .card-type {
+    flex: none; font-family: var(--mono); font-size: .62rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    background: var(--type); color: var(--stock); padding: .15rem .45rem; border-radius: 999px;
+  }
+  .card-art {
+    position: relative; margin: 0 .55rem; aspect-ratio: 4 / 3; border-radius: 6px; overflow: hidden;
+    border: 2px solid var(--ink); background: #fff;
+  }
+  .card-art img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .card-art.glyph { display: grid; place-items: center; background: var(--type); color: var(--stock); }
+  .card-art.glyph svg { width: 70%; height: 70%; }
+  .card-text { padding: .55rem .7rem 0; font-size: .74rem; line-height: 1.45; flex: 1; overflow: hidden; }
+  .card-foot {
+    display: flex; justify-content: space-between; align-items: center; gap: .4rem;
+    padding: .45rem .7rem .55rem; font-family: var(--mono); font-size: .6rem; font-weight: 700; letter-spacing: .06em;
+  }
+  .pips { display: flex; flex-wrap: wrap; gap: .25rem; }
+  .pips span { border: 1.5px solid var(--ink); border-radius: 999px; padding: .05rem .4rem; text-transform: uppercase; }
+  .set-no { flex: none; opacity: .7; }
+
+  /* Strict stat grid — every card that carries numbers uses the same one. */
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--ink); border-top: 2px solid var(--ink); margin-top: auto; }
+  .stat {
+    background: var(--stock); padding: .45rem .55rem; text-align: left; border: 0; font: inherit; color: inherit;
+    cursor: pointer; min-height: 44px;
+  }
+  .stat strong { display: block; font-family: var(--mono); font-size: .98rem; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat span { display: block; font-size: .6rem; line-height: 1.25; opacity: .8; }
+  .stat:hover strong { color: var(--career); }
+
+  .back-body { padding: 1rem 1rem .9rem; display: flex; flex-direction: column; gap: .7rem; height: 100%; }
+  .back-kicker { font-family: var(--mono); font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; opacity: .85; }
+  .back-body p, .back-body li { font-size: .78rem; line-height: 1.5; }
+  .back-body ul { padding-left: 1rem; display: grid; gap: .45rem; overflow: auto; }
+  .back-link {
+    margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; gap: .4rem; min-height: 44px;
+    font-family: var(--mono); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    background: var(--stock); color: var(--ink); text-decoration: none; border-radius: 10px; padding: .6rem .9rem; border: 2px solid var(--ink);
+  }
+  /* Part of the card's own layout, so it can never collide with the frame. */
+  .flip-hint {
+    display: block; text-align: center; padding: .3rem 0 .38rem; border-top: 1.5px dashed rgba(20,20,20,.25);
+    font-family: var(--mono); font-size: .55rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #55554f;
+  }
+
+  /* Holo foil: a conic rainbow that only shows under the pointer, plus a
+     soft glare spot. Rare cards keep a little foil at rest. */
+  .foil, .glare { position: absolute; inset: 0; border-radius: var(--radius); pointer-events: none; z-index: 2; }
+  .foil {
+    background: conic-gradient(from 180deg at var(--gx) var(--gy), #ff7ad9, #ffe14a, #6bffb8, #66c7ff, #b18cff, #ff7ad9);
+    mix-blend-mode: color-dodge; opacity: calc(var(--glare) * .35);
+    transition: opacity .3s ease;
+  }
+  .glare { background: radial-gradient(circle at var(--gx) var(--gy), rgba(255,255,255,.7), transparent 45%); opacity: calc(var(--glare) * .6); mix-blend-mode: soft-light; }
+  .card[data-type="rare"] .foil { opacity: calc(.18 + var(--glare) * .4); }
+
+  .sticker {
+    position: absolute; top: -10px; right: -10px; z-index: 4;
+    background: var(--pack); color: var(--ink); border: 2.5px solid var(--ink); border-radius: 999px;
+    font-family: var(--mono); font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: .35rem .6rem; transform: rotate(8deg); box-shadow: 0 3px 0 var(--ink);
+  }
+
+  /* --- sections ------------------------------------------------------------ */
+  section { padding: clamp(3.5rem, 9vh, 6rem) var(--gutter); scroll-margin-top: 60px; }
+  .sec-head { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
+  h2 { font-weight: 800; font-size: clamp(2.1rem, 5.4vw, 4.2rem); line-height: .95; letter-spacing: -.03em; text-wrap: balance; }
+  .count { font-family: var(--mono); font-weight: 700; font-size: .8rem; letter-spacing: .06em; }
+  .binder { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr)); gap: clamp(1.1rem, 2.5vw, 2rem); }
+  .on-ink { background: var(--ink); color: var(--stock); }
+  .on-ink .count { color: var(--pack); }
+  .on-ink .btn { box-shadow: 0 5px 0 var(--pack); border-color: var(--pack); }
+
+  /* The rare pull: The Signal as a landscape showcase card. */
+  .rare-card {
+    position: relative; border-radius: 26px; border: 3px solid var(--ink); padding: 12px;
+    background: linear-gradient(115deg, #ff7ad9, #ffe14a 30%, #6bffb8 55%, #66c7ff 75%, #b18cff);
+    box-shadow: 0 22px 50px -18px rgba(20,20,20,.55);
+  }
+  .rare-inner { background: var(--stock); color: var(--ink); border-radius: 16px; border: 2.5px solid var(--ink); padding: clamp(1.1rem, 3vw, 2.2rem); }
+  .rare-top { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .6rem; }
+  .rare-top .card-type { --type: var(--ink); font-size: .7rem; }
+  .beat-cap { font-weight: 800; font-size: clamp(1.4rem, 3.4vw, 2.5rem); line-height: 1.05; letter-spacing: -.02em; min-height: 2.2em; margin-top: 1rem; max-width: 30ch; }
+  .beat-cap em { font-style: normal; background: var(--pack); box-shadow: 0 0 0 4px var(--pack); border-radius: 3px; }
+  .big-num { font-family: var(--mono); font-weight: 700; font-size: clamp(2rem, 7vw, 4.6rem); line-height: 1; font-variant-numeric: tabular-nums; margin-top: .6rem; }
+  .big-num small { display: block; font-family: var(--display); font-size: .85rem; font-weight: 600; letter-spacing: 0; margin-top: .4rem; }
+  .chart { display: grid; grid-template-columns: 2rem 1fr; gap: .5rem; margin-top: 1.6rem; }
+  .axis { display: flex; flex-direction: column; justify-content: space-between; font-family: var(--mono); font-size: .65rem; text-align: right; height: 230px; padding-bottom: 1.4rem; }
+  .bars { position: relative; display: grid; grid-template-columns: repeat(7, 1fr); gap: clamp(.35rem, 1.5vw, 1rem); align-items: end; height: 230px; border-bottom: 2.5px solid var(--ink); }
+  .bars::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1.5px dashed rgba(20,20,20,.25); }
+  .bar-col { position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
+  .bar-fill {
+    width: 100%; border: 2.5px solid var(--ink); border-bottom: 0; border-radius: 8px 8px 0 0;
+    background: var(--stock-edge); height: 0; transition: height .9s cubic-bezier(.2,.8,.2,1), background-color .4s ease, opacity .4s ease;
+  }
+  .bar-val { font-family: var(--mono); font-size: .66rem; font-weight: 700; margin-bottom: .25rem; opacity: 0; transition: opacity .4s ease; }
+  .bar-day { position: absolute; bottom: -1.5rem; font-family: var(--mono); font-size: .66rem; font-weight: 700; }
+  .chart[data-beat="1"] .bar-val, .chart[data-beat="2"] .bar-val, .chart[data-beat="3"] .bar-val { opacity: 1; }
+  .chart[data-beat="2"] .bar-col.worst .bar-fill { background: var(--career); }
+  .chart[data-beat="3"] .bar-col.best .bar-fill { background: var(--data); }
+  .chart[data-beat="2"] .bar-col:not(.worst) .bar-fill, .chart[data-beat="3"] .bar-col:not(.best) .bar-fill { opacity: .45; }
+  .rare-foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 2.6rem; padding-top: 1rem; border-top: 2px dashed rgba(20,20,20,.3); }
+  .rare-foot p { font-size: .85rem; max-width: 46ch; }
+  .rare-foot .btn { box-shadow: 0 5px 0 var(--ink); border-color: var(--ink); }
+  .steps { display: flex; gap: .4rem; }
+  .steps button {
+    width: 44px; height: 44px; border-radius: 12px; border: 2.5px solid var(--ink); background: var(--stock);
+    font-family: var(--mono); font-weight: 700; cursor: pointer; color: var(--ink);
+  }
+  .steps button[aria-pressed="true"] { background: var(--ink); color: var(--pack); }
+
+  /* Skills as energy badges. */
+  .energy { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 1rem; }
+  .energy-row { border: 2.5px solid var(--ink); border-radius: 16px; background: var(--stock); color: var(--ink); padding: 1rem; }
+  .energy-row h3 { font-size: .9rem; font-weight: 800; margin-bottom: .7rem; }
+  .energy-row ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+  .energy-row li { font-family: var(--mono); font-size: .72rem; font-weight: 700; border: 2px solid var(--ink); border-radius: 999px; padding: .3rem .65rem; }
+
+  .about-grid { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: center; }
+  .about-lead { font-size: clamp(1.6rem, 3.6vw, 2.8rem); font-weight: 800; line-height: 1.05; letter-spacing: -.02em; }
+  .about-body { margin-top: 1.2rem; max-width: 60ch; font-size: 1.05rem; }
+
+  .trade { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3rem); align-items: start; }
+  .trade-mail { display: inline-block; font-weight: 800; font-size: clamp(1.5rem, 4.4vw, 3.4rem); letter-spacing: -.02em; line-height: 1.05; word-break: break-all; text-decoration-thickness: 3px; text-underline-offset: 6px; margin-top: 1rem; }
+  .rail { list-style: none; padding: 0; display: grid; gap: .6rem; }
+  .rail li { display: grid; grid-template-columns: 6.5rem 1fr; gap: .8rem; align-items: center; border: 2.5px solid var(--pack); border-radius: 14px; padding: .55rem .9rem; min-height: 52px; }
+  .rail span { font-family: var(--mono); font-size: .65rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--pack); }
+  .rail a { text-decoration: none; font-weight: 600; }
+  footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 1.4rem var(--gutter) max(1.4rem, env(safe-area-inset-bottom)); font-family: var(--mono); font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; background: var(--ink); color: var(--stock); }
+  footer button { font: inherit; color: var(--pack); background: none; border: 0; cursor: pointer; text-transform: inherit; letter-spacing: inherit; min-height: 44px; }
+
+  .is-pinged { animation: ping 1.4s ease 1; }
+  @keyframes ping { 0%, 100% { box-shadow: 0 0 0 0 transparent; } 30% { box-shadow: 0 0 0 6px var(--pack), 0 0 0 9px var(--ink); } }
+  li.is-source { background: var(--pack); color: var(--ink); border-radius: 6px; padding: .2rem .35rem; margin-left: -.35rem; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; min-height: 0; }
+    .hand { height: 480px; }
+    .hand .card { width: min(260px, 62vw); }
+    .hand .card:nth-child(1), .hand .card:nth-child(5) { display: none; }
+    .about-grid, .trade { grid-template-columns: 1fr; }
+    .about-grid .card { max-width: 300px; }
+  }
+  @media (max-width: 520px) {
+    .bar nav a { padding: .55rem .55rem; }
+    .set-mark small { display: none; }
+    .hand { height: 430px; }
+    .rail li { grid-template-columns: 1fr; gap: .1rem; }
+    .axis, .bars { height: 190px; }
+  }
+  /* Motion is on by default and only the footer toggle reduces it. Jason's
+     own Windows machine reports prefers-reduced-motion, which flattened the
+     live site twice when it was honored as the default. */
+  .reduced *, .reduced *::before, .reduced *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+</style>
+</head>
+<body>
+<!--
+THESIS: The portfolio is a collectible card set, every claim a card you can flip for its proof. It refuses the dark dev-portfolio hero and the cream editorial page.
+OWN-WORLD: Booster-pack yellow ground with halftone wrapper print; card stock framed in four energy colors (data teal, AI violet, career red, education navy); holo foil under the pointer; Bricolage Grotesque 800 with JetBrains Mono stats.
+STORY: A recruiter sees the character card's four stats in seconds; a data lead flips cards and taps any stat to reach its source bullet.
+FIRST VIEWPORT: Headline left at 7rem; fanned hand of five cards right, Jason's character card leading; Email me as the primary button.
+FORM: collectible trading-card set, #3 of 7; seed bab1784c.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<header class="bar">
+  <a class="set-mark" href="#top" aria-label="JJT Series 2026, back to top">
+    <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1.5" y="1.5" width="23" height="23" rx="6" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M8 17V9m5 8V9m5 8V9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+    JJT <small>SERIES 2026</small>
+  </a>
+  <nav aria-label="Primary">
+    <a href="#signal">Rare</a><a href="#data">Data</a><a href="#ai">AI</a><a href="#career">Career</a><a href="#trade">Trade</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="h1">
+    <div>
+      <h1 id="h1"><span data-f="h1a"></span><span class="second" data-f="h1b"></span></h1>
+      <p class="tagline" data-f="tagline"></p>
+      <div class="actions">
+        <a class="btn primary" data-f="mail">Email me</a>
+        <a class="btn" data-f="linkedin" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+        <a class="btn" href="/Jason-Joseph-Tjiadi-CV.pdf" download>Download CV ↓</a>
+      </div>
+      <p class="schools"><b>9</b> project cards · 2 career · 2 education · NUS · LSE</p>
+    </div>
+    <div class="hand" id="hand" aria-label="A hand of featured cards"></div>
+  </section>
+
+  <section id="signal" class="on-ink" aria-labelledby="sig-h">
+    <div class="sec-head"><h2 id="sig-h">Rare pull</h2><span class="count">Holo · 01/09</span></div>
+    <article class="rare-card" id="rare">
+      <div class="rare-inner">
+        <div class="rare-top">
+          <h3 class="card-name" style="font-size:1.2rem">Airline Flight Delay Analysis</h3>
+          <span class="card-type">Data · Holo rare</span>
+        </div>
+        <p class="beat-cap" id="beat-cap" aria-live="polite"></p>
+        <p class="big-num" id="big-num"></p>
+        <div class="chart" id="chart" data-beat="0">
+          <div class="axis" aria-hidden="true"><span>50</span><span>25</span><span>0</span></div>
+          <div class="bars" id="bars" aria-hidden="true"></div>
+        </div>
+        <div class="rare-foot">
+          <p id="method"></p>
+          <div style="display:flex;gap:.8rem;align-items:center;flex-wrap:wrap">
+            <div class="steps" role="group" aria-label="Story step" id="steps"></div>
+            <a class="btn" id="notebook" target="_blank" rel="noreferrer">See the notebook ↗</a>
+          </div>
+        </div>
+      </div>
+    </article>
+    <!-- Screen readers get the whole finding at once. The WRAPPER is hidden,
+         never the table: a table cannot shrink below its content width. -->
+    <div style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)"><table id="sr-table"></table></div>
+  </section>
+
+  <section id="data" aria-labelledby="data-h">
+    <div class="sec-head"><h2 id="data-h">The data set</h2><span class="count" id="data-count"></span></div>
+    <div class="binder" id="data-binder"></div>
+  </section>
+
+  <section id="ai" aria-labelledby="ai-h" style="background:var(--stock)">
+    <div class="sec-head"><h2 id="ai-h">Built with AI</h2><span class="count" id="ai-count"></span></div>
+    <div class="binder" id="ai-binder"></div>
+    <div class="actions"><a class="btn" href="https://github.com/Jason-Joseph/Projects" target="_blank" rel="noreferrer">More on GitHub ↗</a></div>
+  </section>
+
+  <section id="career" aria-labelledby="career-h">
+    <div class="sec-head"><h2 id="career-h">Career &amp; education</h2><span class="count">Tap a card to flip it</span></div>
+    <div class="binder" id="career-binder"></div>
+  </section>
+
+  <section id="about" class="on-ink" aria-labelledby="about-h">
+    <div class="about-grid">
+      <div id="about-card"></div>
+      <div>
+        <h2 id="about-h" class="about-lead" data-f="lead"></h2>
+        <p class="about-body" data-f="body"></p>
+      </div>
+    </div>
+    <div class="sec-head" style="margin-top:3.5rem"><h2 style="font-size:clamp(1.6rem,3.6vw,2.6rem)">Energy</h2><span class="count">Skills</span></div>
+    <div class="energy" id="energy"></div>
+  </section>
+
+  <section id="trade" class="on-ink" aria-labelledby="trade-h" style="border-top:3px dashed var(--pack)">
+    <div class="trade">
+      <div>
+        <h2 id="trade-h">Trade with me</h2>
+        <a class="trade-mail" data-f="mail-text"></a>
+        <p style="margin-top:1rem;max-width:46ch" data-f="availability"></p>
+        <div class="actions"><a class="btn" href="/Jason-Joseph-Tjiadi-CV.pdf" download>Download CV ↓</a></div>
+      </div>
+      <ul class="rail" id="rail"></ul>
+    </div>
+  </section>
+</main>
+<footer>
+  <span>JJT Series 2026 · v2 mockup A</span>
+  <button type="button" id="motion">Reduce motion</button>
+  <a href="#top" style="text-decoration:none;min-height:44px;display:inline-flex;align-items:center">Back to top ↑</a>
+</footer>
+
+<script type="module">
+import content from "/src/content.ts";
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const { profile, about, stats, signal, experience, education, skills, projects, contact } = content;
+const TOTAL = projects.length;
+const pad = (n) => String(n).padStart(2, "0");
+
+// ---- hero copy (the headline is the site's existing line, split in two)
+$('[data-f="h1a"]').textContent = "Numbers made legible.";
+$('[data-f="h1b"]').textContent = "Decisions made easier.";
+$('[data-f="tagline"]').textContent = profile.tagline;
+$('[data-f="mail"]').href = `mailto:${contact.email}`;
+$('[data-f="linkedin"]').href = contact.linkedin;
+$('[data-f="lead"]').textContent = about.lead;
+$('[data-f="body"]').textContent = about.body;
+const mt = $('[data-f="mail-text"]'); mt.href = `mailto:${contact.email}`; mt.textContent = contact.email;
+$('[data-f="availability"]').textContent = contact.availability;
+
+// ---- card factory --------------------------------------------------------
+// Front poses the claim; back answers with the proof (raise: pose/answer).
+const glyphs = {
+  cluster: '<svg viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><circle cx="28" cy="34" r="7"/><circle cx="40" cy="26" r="5"/><circle cx="36" cy="44" r="6"/><circle cx="68" cy="62" r="7"/><circle cx="76" cy="50" r="5"/><circle cx="60" cy="74" r="6"/><circle cx="30" cy="72" r="4"/></svg>',
+  regress: '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" aria-hidden="true"><path d="M14 82 86 22"/><g fill="currentColor" stroke="none"><circle cx="22" cy="70" r="5"/><circle cx="36" cy="66" r="5"/><circle cx="48" cy="50" r="5"/><circle cx="60" cy="46" r="5"/><circle cx="74" cy="30" r="5"/></g></svg>',
+};
+const firstSentence = (d) => d.split(" — ")[0].split(". ")[0].replace(/\.$/, "") + ".";
+function projectCard(p) {
+  const type = p.kind === "ai" ? "ai" : "data";
+  const ext = p.link.startsWith("http");
+  const art = p.image
+    ? `<div class="card-art"><img src="${esc(p.image)}" alt="${esc(p.imageAlt ?? p.title)}" loading="lazy" /></div>`
+    : `<div class="card-art glyph">${p.tags.includes("Clustering") ? glyphs.cluster : glyphs.regress}</div>`;
+  const linkLabel = p.link.startsWith("mailto:") ? "Ask for a demo" : p.link === "#top" ? "You're on it" : /\.(ipynb|R)$/.test(p.link) ? "Open the code" : "Open it";
+  return `
+  <article class="card" data-type="${type}" tabindex="0" role="button" aria-pressed="false" aria-label="${esc(p.title)}, card ${p.index} of ${pad(TOTAL)}. Press to flip.">
+    ${p.badge ? `<span class="sticker">${esc(p.badge)}</span>` : ""}
+    <div class="card-inner">
+      <div class="face front">
+        <div class="front-body">
+          <div class="card-head"><h3 class="card-name">${esc(p.title)}</h3><span class="card-type">${type === "ai" ? "AI" : "Data"}</span></div>
+          ${art}
+          <p class="card-text">${esc(firstSentence(p.description))}</p>
+          <div class="card-foot"><div class="pips">${p.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div><span class="set-no">${p.index}/${pad(TOTAL)}</span></div>
+          <span class="flip-hint" aria-hidden="true">↻ Tap to flip</span>
+        </div>
+        <span class="foil"></span><span class="glare"></span>
+      </div>
+      <div class="face back">
+        <div class="back-body">
+          <span class="back-kicker">${p.index}/${pad(TOTAL)} · ${esc(p.tags.join(" · "))}</span>
+          <p>${esc(p.description)}</p>
+          <a class="back-link" href="${esc(p.link)}" ${ext ? 'target="_blank" rel="noreferrer"' : ""}>${linkLabel} ${ext ? "↗" : "→"}</a>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+
+function careerCard(x) {
+  const keyStat = x.shortName === "KPay" ? { v: "10,000+", l: "merchants analysed" } : { v: "20+", l: "merchant partners" };
+  return `
+  <article class="card" data-type="career" id="card-${x.shortName.toLowerCase()}" tabindex="0" role="button" aria-pressed="false" aria-label="${esc(x.shortName)}, ${esc(x.role)}. Press to flip.">
+    <div class="card-inner">
+      <div class="face front">
+        <div class="front-body">
+          <div class="card-head"><h3 class="card-name">${esc(x.shortName)}</h3><span class="card-type">Career</span></div>
+          <div class="card-art" style="display:grid;place-items:center;padding:1.2rem;background:#fff"><img src="${esc(x.logo)}" alt="${esc(x.company)} logo" style="max-height:70px;width:auto;object-fit:contain" /></div>
+          <p class="card-text"><strong>${esc(x.role)}</strong><br>${esc(x.location)} · ${esc(x.dates)}</p>
+          <div class="stats"><div class="stat" style="grid-column:1/-1;cursor:default"><strong>${keyStat.v}</strong><span>${keyStat.l}</span></div></div>
+          <span class="flip-hint" aria-hidden="true">↻ Tap to flip</span>
+        </div>
+        <span class="foil"></span><span class="glare"></span>
+      </div>
+      <div class="face back">
+        <div class="back-body">
+          <span class="back-kicker">${esc(x.company)}</span>
+          <ul>${x.highlights.map((h, i) => `<li data-i="${i}">${esc(h)}</li>`).join("")}</ul>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+
+function eduCard(e) {
+  const short = e.institution.includes("Singapore") ? "NUS" : "LSE";
+  return `
+  <article class="card" data-type="edu" id="card-${short.toLowerCase()}" tabindex="0" role="button" aria-pressed="false" aria-label="${esc(e.institution)}. Press to flip.">
+    <div class="card-inner">
+      <div class="face front">
+        <div class="front-body">
+          <div class="card-head"><h3 class="card-name">${short}</h3><span class="card-type">Education</span></div>
+          <div class="card-art" style="display:grid;place-items:center;padding:1.2rem;background:#fff"><img src="${esc(e.logo)}" alt="${esc(e.institution)} logo" style="max-height:70px;width:auto;object-fit:contain" /></div>
+          <p class="card-text"><strong>${esc(e.degree)}</strong><br>${esc(e.dates)}</p>
+          <div class="stats"><div class="stat" style="grid-column:1/-1;cursor:default"><strong>${short === "NUS" ? "4.6 / 5.0" : "First Class"}</strong><span>${short === "NUS" ? "GPA" : "Honours"}</span></div></div>
+          <span class="flip-hint" aria-hidden="true">↻ Tap to flip</span>
+        </div>
+        <span class="foil"></span><span class="glare"></span>
+      </div>
+      <div class="face back">
+        <div class="back-body">
+          <span class="back-kicker">${esc(e.institution)}</span>
+          <p>${esc(e.degree)}</p><p>${esc(e.details)}</p>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+
+// The character card: the four headline stats, each a button that traces
+// back to the card and bullet it came from (raise: trace every load).
+const statSource = ["kpay:0", "kpay:1", "bca:0", "lse:"];
+function characterCard() {
+  return `
+  <article class="card" data-type="rare" tabindex="0" role="button" aria-pressed="false" aria-label="${esc(profile.name)}, character card. Press to flip.">
+    <div class="card-inner">
+      <div class="face front">
+        <div class="front-body">
+          <div class="card-head"><h3 class="card-name">${esc(profile.name)}</h3><span class="card-type">${esc(profile.title)}</span></div>
+          <div class="card-art" style="aspect-ratio:5/4"><img src="${esc(profile.photoPath)}" alt="Portrait of ${esc(profile.name)}" style="object-position:center 20%" /></div>
+          <div class="stats">${stats.map((s, i) => `<button type="button" class="stat" data-src="${statSource[i]}" aria-label="${esc(s.value)} ${esc(s.label)}. Show the source."><strong>${esc(s.value)}</strong><span>${esc(s.label)}</span></button>`).join("")}</div>
+        </div>
+        <span class="foil"></span><span class="glare"></span>
+      </div>
+      <div class="face back">
+        <div class="back-body">
+          <span class="back-kicker">${esc(contact.location)} · NUS · LSE</span>
+          <p style="font-size:.95rem;font-weight:700">${esc(about.lead)}</p>
+          <p>${esc(about.body)}</p>
+        </div>
+      </div>
+    </div>
+  </article>`;
+}
+
+// ---- deal the cards in their fixed order (raise: ordered stations) -------
+const dataP = projects.filter((p) => p.kind === "data" && !p.story);
+const aiP = projects.filter((p) => p.kind === "ai");
+const hand = [dataP[0], aiP[1], null, experience[0], education[1]];
+$("#hand").innerHTML = hand.map((x) => (x === null ? characterCard() : x.highlights ? careerCard(x) : x.degree ? eduCard(x) : projectCard(x))).join("");
+// The hand repeats cards shown below; drop their ids so anchors stay unique.
+$("#hand").querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+$("#data-binder").innerHTML = dataP.map(projectCard).join("");
+$("#ai-binder").innerHTML = aiP.map(projectCard).join("");
+$("#career-binder").innerHTML = experience.map(careerCard).join("") + education.map(eduCard).join("");
+$("#about-card").innerHTML = characterCard();
+$("#data-count").textContent = `${dataP.length} cards · the holo is above`;
+$("#ai-count").textContent = `${aiP.length} cards`;
+
+$("#energy").innerHTML = skills.map((s) => `<div class="energy-row"><h3>${esc(s.category)}</h3><ul>${s.items.map((i) => `<li>${esc(i)}</li>`).join("")}</ul></div>`).join("");
+$("#rail").innerHTML = [
+  ["Email", `<a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a>`],
+  ["Phone", `<a href="tel:${esc(contact.phone.replace(/\s/g, ""))}">${esc(contact.phone)}</a>`],
+  ["LinkedIn", `<a href="${esc(contact.linkedin)}" target="_blank" rel="noreferrer">in/jasontjiadi ↗</a>`],
+  ["GitHub", `<a href="${esc(contact.github)}" target="_blank" rel="noreferrer">Jason-Joseph ↗</a>`],
+  ["Location", `<strong style="font-weight:600">${esc(contact.location)}</strong>`],
+].map(([k, v]) => `<li><span>${k}</span>${v}</li>`).join("");
+
+// ---- flip, tilt, foil ------------------------------------------------------
+let reduced = false; // default-on motion; see the note above .reduced in the CSS
+document.querySelectorAll(".card").forEach((card) => {
+  const flip = () => {
+    const on = !card.classList.contains("is-flipped");
+    card.classList.toggle("is-flipped", on);
+    card.setAttribute("aria-pressed", String(on));
+  };
+  card.addEventListener("click", (e) => { if (!e.target.closest("a, .stat")) flip(); });
+  card.addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === " ") && e.target === card) { e.preventDefault(); flip(); }
+  });
+  card.addEventListener("pointermove", (e) => {
+    if (reduced || e.pointerType === "touch") return;
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    card.style.setProperty("--ry", `${(x - 0.5) * 18}deg`);
+    card.style.setProperty("--rx", `${(0.5 - y) * 14}deg`);
+    card.style.setProperty("--gx", `${x * 100}%`);
+    card.style.setProperty("--gy", `${y * 100}%`);
+    card.style.setProperty("--glare", "1");
+  });
+  card.addEventListener("pointerleave", () => {
+    ["--rx", "--ry"].forEach((p) => card.style.setProperty(p, "0deg"));
+    card.style.setProperty("--glare", "0");
+  });
+});
+
+// Stat → source: flip the card it came from and highlight the exact bullet.
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".stat[data-src]");
+  if (!btn) return;
+  const [who, which] = btn.dataset.src.split(":");
+  const target = $(`#card-${who}`);
+  if (!target) return;
+  target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+  setTimeout(() => {
+    target.classList.add("is-flipped"); target.setAttribute("aria-pressed", "true");
+    target.querySelectorAll("li").forEach((li) => li.classList.toggle("is-source", li.dataset.i === which));
+    target.classList.remove("is-pinged"); void target.offsetWidth; target.classList.add("is-pinged");
+  }, reduced ? 0 : 650);
+});
+
+// ---- deal-in: cards land in reading order as each binder enters view ------
+const deal = (root) => {
+  [...root.querySelectorAll(":scope > .card")].forEach((c, i) => c.animate(
+    [{ opacity: 0, transform: "translateY(-60px) rotate(-10deg) scale(.86)" }, { opacity: 1, transform: "none" }],
+    { duration: 620, delay: i * 110, easing: "cubic-bezier(.2,.9,.25,1.15)", fill: "backwards" },
+  ));
+};
+const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+  if (!en.isIntersecting) return;
+  io.unobserve(en.target);
+  if (!reduced) deal(en.target);
+}), { threshold: 0.15 });
+document.querySelectorAll(".binder").forEach((b) => io.observe(b));
+
+// The opening hand fans out once on load.
+if (!reduced) {
+  document.querySelectorAll("#hand .card").forEach((c, i) => c.animate(
+    [{ opacity: 0, translate: "0 30%", scale: ".8" }, { opacity: 1, translate: "0 0", scale: "1" }],
+    { duration: 800, delay: 150 + i * 90, easing: "cubic-bezier(.2,.9,.25,1.15)", fill: "backwards" },
+  ));
+}
+
+// ---- the rare pull: The Signal, four beats ---------------------------------
+const days = signal.days;
+const dayName = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
+$("#bars").innerHTML = days.map((d, i) => `
+  <div class="bar-col ${i === signal.worstIndex ? "worst" : ""} ${i === signal.bestIndex ? "best" : ""}">
+    <span class="bar-val">${d.minutes.toFixed(1)}</span>
+    <div class="bar-fill" data-h="${(d.minutes / signal.axisMax) * 100}"></div>
+    <span class="bar-day">${d.day}</span>
+  </div>`).join("");
+$("#method").textContent = signal.method;
+$("#notebook").href = signal.notebook;
+$("#sr-table").innerHTML = `<caption>Average total flight delay by day of week, from ${signal.totalFlights.toLocaleString("en-US")} US domestic flights, 2002 to 2003</caption><tbody>${days.map((d) => `<tr><th scope="row">${d.day}</th><td>${d.minutes.toFixed(1)} minutes</td></tr>`).join("")}</tbody>`;
+
+const worst = days[signal.worstIndex], best = days[signal.bestIndex];
+const beats = [
+  { cap: "Two years of US domestic aviation.", num: () => `<span id="counter">0</span><small>flights</small>` },
+  { cap: "Average total delay, <em>by day of week</em>.", num: () => `0–${signal.axisMax}<small>minutes, zero baseline</small>` },
+  { cap: `${dayName[worst.day]} is the worst day to fly.`, num: () => `${worst.minutes.toFixed(1)}<small>minutes on ${dayName[worst.day]}</small>` },
+  { cap: `${dayName[best.day]} is calmest. <em>By six minutes.</em> The day barely matters. That's the finding.`, num: () => `${best.minutes.toFixed(1)}<small>minutes on ${dayName[best.day]}</small>` },
+];
+$("#steps").innerHTML = beats.map((_, i) => `<button type="button" aria-pressed="false" aria-label="Step ${i + 1} of 4">${i + 1}</button>`).join("");
+let beat = -1;
+function setBeat(n) {
+  beat = n;
+  $("#beat-cap").innerHTML = beats[n].cap;
+  $("#big-num").innerHTML = beats[n].num();
+  $("#chart").dataset.beat = String(n);
+  document.querySelectorAll(".bar-fill").forEach((b) => { b.style.height = n >= 1 ? `${b.dataset.h}%` : "0"; });
+  document.querySelectorAll("#steps button").forEach((b, i) => b.setAttribute("aria-pressed", String(i === n)));
+  if (n === 0) {
+    const el = $("#counter");
+    if (reduced) { el.textContent = signal.totalFlights.toLocaleString("en-US"); return; }
+    const t0 = performance.now(), dur = 1400;
+    const tick = (t) => {
+      const k = Math.min(1, (t - t0) / dur), ease = 1 - Math.pow(1 - k, 3);
+      el.textContent = Math.round(signal.totalFlights * ease).toLocaleString("en-US");
+      if (k < 1 && beat === 0) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+}
+let auto;
+const stopAuto = () => clearInterval(auto);
+$("#steps").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  stopAuto(); setBeat([...b.parentNode.children].indexOf(b));
+});
+const sio = new IntersectionObserver(([en]) => {
+  if (!en.isIntersecting || beat !== -1) return;
+  if (reduced) { setBeat(3); return; }
+  setBeat(0);
+  auto = setInterval(() => { if (beat >= 3) return stopAuto(); setBeat(beat + 1); }, 2400);
+}, { threshold: 0.35 });
+sio.observe($("#rare"));
+
+$("#motion").addEventListener("click", (e) => {
+  reduced = !reduced;
+  document.documentElement.classList.toggle("reduced", reduced);
+  e.currentTarget.textContent = reduced ? "Enable motion" : "Reduce motion";
+});
+</script>
+</body>
+</html>

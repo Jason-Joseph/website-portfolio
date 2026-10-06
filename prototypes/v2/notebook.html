@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>jason_portfolio.ipynb — v2 mockup E: The Notebook</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ground: #f4f5f7;
+    --surface: #ffffff;
+    --line: #e3e5ea;
+    --ink: #1b1f27;
+    --muted: #646b78;
+    --code-bg: #f6f7f9;
+    --in: #307fc1;            /* JupyterLab's own prompt colours */
+    --out: #bf5b3d;
+    --select: #1976d2;
+    --busy: #f37726;
+    --ui: "Geist", system-ui, sans-serif;
+    --code: "Fira Code", ui-monospace, monospace;
+    --bar-h: 44px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--ground); color: var(--ink); font-family: var(--ui); font-size: 15px; line-height: 1.6; overflow-x: clip; }
+  ::selection { background: #cfe3fb; }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
+  svg.ic { width: 16px; height: 16px; flex: none; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  /* --- chrome: menubar, toolbar, sidebar, status bar ---------------------- */
+  .menubar {
+    position: sticky; top: 0; z-index: 30; height: calc(var(--bar-h) + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) 1rem 0;
+    display: flex; align-items: center; gap: 1.2rem; background: var(--surface); border-bottom: 1px solid var(--line);
+  }
+  .brand { display: inline-flex; align-items: center; gap: .55rem; font-weight: 600; text-decoration: none; white-space: nowrap; min-height: 44px; }
+  .brand svg { width: 22px; height: 22px; }
+  .menu { display: flex; gap: .1rem; overflow-x: auto; scrollbar-width: none; flex: 1; }
+  .menu a { text-decoration: none; padding: .45rem .7rem; border-radius: 4px; color: var(--muted); white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; transition: background-color .2s ease, color .2s ease; }
+  .menu a:hover, .menu a[aria-current="true"] { background: #eef0f4; color: var(--ink); }
+  .kernel { display: inline-flex; align-items: center; gap: .55rem; font-size: .82rem; color: var(--muted); white-space: nowrap; }
+  .kdot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--muted); transition: background-color .25s ease, border-color .25s ease; }
+  .kernel[data-busy="true"] .kdot { background: var(--busy); border-color: var(--busy); }
+
+  .layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); min-height: calc(100vh - var(--bar-h)); }
+  .files { position: sticky; top: var(--bar-h); height: calc(100vh - var(--bar-h) - 26px); border-right: 1px solid var(--line); background: var(--surface); padding: .8rem .6rem; overflow: auto; }
+  .files h2 { font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: .2rem .5rem .6rem; }
+  .files a { display: flex; align-items: center; gap: .55rem; padding: .35rem .5rem; border-radius: 4px; text-decoration: none; font-size: .86rem; min-height: 36px; overflow-wrap: anywhere; }
+  .files a:hover { background: #eef0f4; }
+  .files a.on { background: #e3eefb; color: #0d4fa0; }
+  .files .indent { padding-left: 1.7rem; }
+
+  .workspace { min-width: 0; }
+  .tabs { display: flex; align-items: end; padding: .5rem 1rem 0; border-bottom: 1px solid var(--line); background: #eceef2; }
+  .tab { display: inline-flex; align-items: center; gap: .5rem; padding: .45rem .9rem; background: var(--ground); border: 1px solid var(--line); border-bottom: 0; border-radius: 6px 6px 0 0; font-size: .85rem; }
+  .tab i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+  .toolbar { display: flex; align-items: center; gap: .3rem; padding: .35rem 1rem; border-bottom: 1px solid var(--line); background: var(--ground); position: sticky; top: var(--bar-h); z-index: 20; }
+  .tb { display: inline-flex; align-items: center; gap: .4rem; min-height: 40px; padding: 0 .65rem; border: 0; border-radius: 4px; background: transparent; color: var(--ink); font: inherit; font-size: .85rem; cursor: pointer; transition: background-color .2s ease; }
+  .tb:hover { background: #e7e9ee; }
+  .tb[aria-pressed="true"] { background: #e3eefb; color: #0d4fa0; }
+  .tb-sep { width: 1px; height: 20px; background: var(--line); margin: 0 .3rem; }
+  .tb-type { margin-left: auto; font-size: .8rem; color: var(--muted); }
+
+  .status {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; min-height: calc(28px + env(safe-area-inset-bottom));
+    padding: 0 1rem env(safe-area-inset-bottom); display: flex; align-items: center; gap: 1.4rem;
+    background: var(--surface); border-top: 1px solid var(--line); font-size: .74rem; color: var(--muted);
+  }
+  .status button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; margin-left: auto; min-height: 28px; }
+
+  /* --- the notebook -------------------------------------------------------- */
+  .nb { position: relative; max-width: 920px; margin: 0 auto; padding: 1.4rem 1.4rem 6rem 1rem; }
+  .selbar { position: absolute; left: .4rem; top: 0; width: 3px; height: 0; background: var(--select); border-radius: 2px; pointer-events: none; }
+  .cell { position: relative; display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); column-gap: .6rem; padding: .35rem 0; scroll-margin-top: calc(var(--bar-h) + 52px); }
+  .prompt { font-family: var(--code); font-size: .8rem; text-align: right; padding-top: .55rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .prompt.in { color: var(--in); }
+  .prompt.out { color: var(--out); padding-top: .2rem; }
+  .input { background: var(--code-bg); border: 1px solid var(--line); border-radius: 4px; padding: .55rem .8rem; overflow-x: auto; }
+  /* No ligatures: Jupyter doesn't use them, and Fira Code's "==" ligature
+     reads as a stray wide symbol to anyone who doesn't write code. */
+  pre, .stdout, .prompt, .chips span, .big { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+  pre { font-family: var(--code); font-size: .84rem; line-height: 1.6; white-space: pre; }
+  .k { color: #7a3ead; } .s { color: #0b7a75; } .n { color: #b5541f; } .f { color: #1f5fbf; } .c { color: #737985; } .o { color: #9a3b54; } .b { color: #2a7a3a; }
+  .output { padding: .5rem 0 .3rem; min-width: 0; }
+  .outrow { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); column-gap: .6rem; grid-column: 1 / -1; }
+  .md { grid-column: 2; padding: .3rem 0; }
+  .md h1 { font-weight: 600; font-size: clamp(2.3rem, 5.4vw, 4rem); line-height: 1.02; letter-spacing: -.03em; text-wrap: balance; }
+  .md h2 { font-weight: 600; font-size: clamp(1.5rem, 3vw, 2.1rem); letter-spacing: -.02em; line-height: 1.1; margin-top: 1.6rem; text-wrap: balance; }
+  .md p { margin-top: .8rem; max-width: 64ch; font-size: 1.02rem; }
+  .md .meta { color: var(--muted); font-size: .92rem; }
+  .md strong { font-weight: 600; }
+
+  /* ipywidgets-style buttons */
+  .widgets { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .w-btn { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: 0 1rem; border-radius: 3px; border: 1px solid #c9cdd5; background: #fff; color: var(--ink); text-decoration: none; font-size: .9rem; box-shadow: 0 1px 2px rgba(27,31,39,.08); transition: background-color .2s ease, border-color .2s ease; }
+  .w-btn:hover { background: #f2f4f7; border-color: #aab1bd; }
+  .w-btn.primary { background: var(--select); border-color: var(--select); color: #fff; }
+  .w-btn.primary:hover { background: #135fa8; }
+
+  /* pandas DataFrame output */
+  .df { border-collapse: collapse; font-size: .88rem; font-variant-numeric: tabular-nums; }
+  .df th, .df td { padding: .45rem .9rem; text-align: right; border: 0; vertical-align: top; }
+  .df thead th { border-bottom: 1px solid var(--ink); font-weight: 600; }
+  .df tbody tr:nth-child(odd) { background: #f5f5f5; }
+  .df tbody tr:hover { background: rgba(66,165,245,.15); }
+  .df th[scope="row"] { font-weight: 600; }
+  .df td.l, .df th.l { text-align: left; }
+  .df-wrap { overflow-x: auto; }
+  .stdout { font-family: var(--code); font-size: .86rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .big { font-family: var(--code); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 500; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+
+  /* rich display: project and role cards */
+  .rich { display: grid; gap: 1rem; }
+  .proj { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: .9rem; }
+  .proj .cover { aspect-ratio: 4 / 3; border-radius: 3px; overflow: hidden; border: 1px solid var(--line); background: #fafafa; }
+  .proj .cover img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .proj h3 { font-weight: 600; font-size: 1.06rem; line-height: 1.3; }
+  .proj p { margin-top: .3rem; font-size: .92rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .5rem; }
+  .chips span { font-family: var(--code); font-size: .72rem; padding: .05rem .45rem; border-radius: 3px; background: #eef0f4; color: #3e4552; }
+  .open { display: inline-flex; align-items: center; min-height: 44px; font-size: .88rem; color: #135fa8; text-underline-offset: 3px; }
+  .badge { font-size: .7rem; font-weight: 600; color: #fff; background: #2a7a3a; border-radius: 3px; padding: .05rem .4rem; margin-left: .4rem; vertical-align: .12em; }
+  .role { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1rem 1.1rem; }
+  .role header { display: flex; justify-content: space-between; align-items: start; gap: 1rem; flex-wrap: wrap; }
+  .role img { height: 26px; width: auto; }
+  .role h3 { font-weight: 600; font-size: 1.05rem; margin-top: .6rem; }
+  .role .when { font-family: var(--code); font-size: .78rem; color: var(--muted); }
+  .role .what { font-size: .88rem; color: var(--muted); }
+  .role ul { margin-top: .6rem; padding-left: 1.1rem; display: grid; gap: .35rem; font-size: .92rem; }
+
+  /* The plot: matplotlib's grammar, zero baseline, one measurement grid. */
+  .fig { background: #fff; border: 1px solid var(--line); border-radius: 4px; padding: .6rem; max-width: 640px; }
+  .fig svg { width: 100%; height: auto; display: block; font-family: var(--ui); }
+  .finding { margin-top: .8rem; font-size: 1.05rem; max-width: 60ch; }
+  .finding mark { background: #dff3dc; padding: 0 .15em; }
+
+  .portrait { width: 9rem; aspect-ratio: 4 / 5; border-radius: 4px; overflow: hidden; border: 1px solid var(--line); margin-top: 1rem; }
+  .portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
+  .caret { display: inline-block; width: 8px; height: 1.1em; background: var(--ink); vertical-align: -.15em; animation: caret 1.1s steps(2, jump-none) infinite; }
+  @keyframes caret { 50% { opacity: 0; } }
+
+  /* Pending output: JS adds this class; without JS everything shows. */
+  .pending .output-body { opacity: 0; }
+  .outputs-only .input, .outputs-only .prompt.in, .outputs-only .cell.last { display: none; }
+
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    .files { display: none; }
+  }
+  @media (max-width: 640px) {
+    .cell, .outrow { grid-template-columns: minmax(0, 1fr); }
+    .prompt { text-align: left; padding: .2rem 0 .1rem; }
+    .md { grid-column: 1; }
+    .nb { padding: 1rem .9rem 6rem 1.1rem; }
+    .selbar { left: .25rem; }
+    .proj { grid-template-columns: minmax(0, 1fr); }
+    .menu a[href="#about"], .menu a[href="#signal"] { display: none; }
+    .kernel span { display: none; }
+    .tb-type, .tab { display: none; }
+    .tabs { padding: 0; border: 0; }
+    .status .hide-sm { display: none; }
+  }
+  /* Motion is on by default and only the status-bar toggle reduces it. Jason's
+     own Windows machine reports prefers-reduced-motion, which flattened the
+     live site twice when it was honored as the default. */
+  .reduced *, .reduced *::before, .reduced *::after { transition-duration: .01ms !important; animation: none !important; }
+</style>
+</head>
+<body>
+<!--
+THESIS: The portfolio is a notebook that runs itself: every claim is an executed cell whose output is the proof. It refuses the dark dev hero and the cream editorial page.
+OWN-WORLD: JupyterLab light chrome (menubar, file browser, toolbar, status bar), In/Out prompts in Jupyter blue and rust, a gliding blue selection bar, pandas DataFrames, ipywidgets buttons, a matplotlib bar chart in its default cycle; Geist and Fira Code.
+STORY: A recruiter reads the first markdown cell and the stats DataFrame in seconds, or flips to Outputs only; a data lead reads the real groupby and opens the notebook.
+FIRST VIEWPORT: The notebook chrome with the title cell's 4rem headline, then cell [1] running to reveal Email me as the blue primary widget.
+FORM: Jupyter notebook, #7 of 7; seed bab1784c, re-roll 1.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<header class="menubar">
+  <a class="brand" href="#top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#f37726" stroke-width="2.4"/><circle cx="12" cy="12" r="3.2" fill="#f37726"/></svg>
+    JJT
+  </a>
+  <nav class="menu" aria-label="Notebook sections">
+    <a href="#signal">Signal</a><a href="#work">Work</a><a href="#experience">Experience</a><a href="#about">About</a><a href="#contact">Contact</a>
+  </nav>
+  <div class="kernel" id="kernel" data-busy="false"><span>Python 3 (ipykernel)</span><i class="kdot" aria-hidden="true"></i><em class="sr" id="kstate" aria-live="polite">Kernel idle</em></div>
+</header>
+
+<div class="layout">
+  <aside class="files" aria-label="File browser">
+    <h2>File browser</h2>
+    <a href="#top" class="on"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="1.5" width="11" height="13" rx="1.5" fill="none" stroke="#f37726" stroke-width="1.4"/><path d="M5 5h6M5 8h6M5 11h4" stroke="#f37726" stroke-width="1.2"/></svg>jason_portfolio.ipynb</a>
+    <a href="#signal"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4.5h5l1.5 1.5h6.5v7.5h-13z" fill="none" stroke="#646b78" stroke-width="1.3"/></svg>data/</a>
+    <a href="#signal" class="indent"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="1.5" width="11" height="13" rx="1.5" fill="none" stroke="#2a7a3a" stroke-width="1.3"/><path d="M5 6h6M5 9h6M5 12h6" stroke="#2a7a3a" stroke-width="1"/></svg>airline_2002_2003.csv</a>
+    <a href="#work"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M1.5 4.5h5l1.5 1.5h6.5v7.5h-13z" fill="none" stroke="#646b78" stroke-width="1.3"/></svg>projects/</a>
+    <a href="/Jason-Joseph-Tjiadi-CV.pdf" download><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="1.5" width="11" height="13" rx="1.5" fill="none" stroke="#d62728" stroke-width="1.3"/><path d="M5 10.5h6" stroke="#d62728" stroke-width="1.3"/></svg>Jason-Joseph-Tjiadi-CV.pdf</a>
+    <a href="https://github.com/Jason-Joseph" target="_blank" rel="noreferrer"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.5 9.5l3-3M5 8l-1.5 1.5a2.1 2.1 0 003 3L8 11M11 8l1.5-1.5a2.1 2.1 0 00-3-3L8 5" fill="none" stroke="#646b78" stroke-width="1.3"/></svg>github.com/Jason-Joseph</a>
+  </aside>
+
+  <div class="workspace">
+    <div class="tabs"><span class="tab"><i aria-hidden="true"></i>jason_portfolio.ipynb</span></div>
+    <div class="toolbar" role="toolbar" aria-label="Notebook">
+      <button class="tb" type="button" id="runall"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5l6 5.5-6 5.5zM9 2.5l6 5.5-6 5.5z" fill="currentColor"/></svg>Run all</button>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <button class="tb" type="button" id="outonly" aria-pressed="false"><svg class="ic" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4 7h8M4 10h5" stroke="currentColor" stroke-width="1.2"/></svg>Outputs only</button>
+      <span class="tb-type">Python 3</span>
+    </div>
+
+    <main class="nb" id="top">
+      <div class="selbar" id="selbar" aria-hidden="true"></div>
+
+      <section class="cell md-cell" aria-labelledby="h1">
+        <div class="prompt" aria-hidden="true"></div>
+        <div class="md">
+          <h1 id="h1">Numbers made legible. Decisions made easier.</h1>
+          <p class="meta"><strong data-f="name"></strong> · <span data-f="title"></span> · <span data-f="loc"></span> · NUS · LSE</p>
+          <p data-f="tagline"></p>
+        </div>
+      </section>
+
+      <section class="cell code" data-run>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre><span class="k">from</span> jason <span class="k">import</span> contact
+contact<span class="o">.</span><span class="f">reach_out</span>()</pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body widgets">
+          <a class="w-btn primary" data-f="mail">Email me</a>
+          <a class="w-btn" data-f="linkedin" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+          <a class="w-btn" href="/Jason-Joseph-Tjiadi-CV.pdf" download>Download CV ↓</a>
+        </div></div></div>
+      </section>
+
+      <section class="cell code" data-run>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre>profile<span class="o">.</span><span class="f">headline_stats</span>()</pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body df-wrap"><table class="df" id="stats-df"></table></div></div></div>
+      </section>
+
+      <section class="cell md-cell" id="signal">
+        <div class="prompt" aria-hidden="true"></div>
+        <div class="md"><h2 data-f="story-title"></h2><p>US domestic flights, 2002–2003. When is the best day to fly?</p></div>
+      </section>
+
+      <section class="cell code" data-run>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre>flights <span class="o">=</span> <span class="f">load_airline_data</span>(years<span class="o">=</span>[<span class="n">2002</span>, <span class="n">2003</span>])
+<span class="b">len</span>(flights)</pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body big" id="flights" data-count></div></div></div>
+      </section>
+
+      <section class="cell code" data-run data-chart>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre>delay <span class="o">=</span> (flights<span class="o">.</span><span class="f">groupby</span>(<span class="s">"DayOfWeek"</span>)[[<span class="s">"ArrDelay"</span>, <span class="s">"DepDelay"</span>]]
+              <span class="o">.</span><span class="f">mean</span>()<span class="o">.</span><span class="f">sum</span>(axis<span class="o">=</span><span class="n">1</span>))
+delay<span class="o">.</span>plot<span class="o">.</span><span class="f">bar</span>(ylim<span class="o">=</span>(<span class="n">0</span>, <span class="n">50</span>))  <span class="c"># zero baseline, always</span></pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body">
+          <div class="fig"><svg id="plot" viewBox="0 0 640 330" role="img" aria-labelledby="plot-title"><title id="plot-title">Average total flight delay by day of week</title></svg></div>
+          <p class="finding" id="finding"></p>
+          <p style="margin-top:.6rem;color:var(--muted);font-size:.88rem" id="method"></p>
+          <a class="open" id="notebook" target="_blank" rel="noreferrer">Open the real notebook ↗</a>
+          <div class="sr"><table id="sr-table"></table></div>
+        </div></div></div>
+      </section>
+
+      <section class="cell md-cell" id="work">
+        <div class="prompt" aria-hidden="true"></div>
+        <div class="md"><h2>Data work</h2><p>Analyses from raw data to the final call. Each one links to its source.</p></div>
+      </section>
+      <section class="cell code" data-run>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre>projects<span class="o">.</span><span class="f">query</span>(<span class="s">"kind == 'data'"</span>)</pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body rich" id="data-out"></div></div></div>
+      </section>
+
+      <section class="cell md-cell">
+        <div class="prompt" aria-hidden="true"></div>
+        <div class="md"><h2>Built with AI</h2><p>Things I designed and shipped with Claude Code.</p></div>
+      </section>
+      <section class="cell code" data-run>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre>projects<span class="o">.</span><span class="f">query</span>(<span class="s">"kind == 'ai'"</span>)</pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body">
+          <div class="rich" id="ai-out"></div>
+          <a class="open" href="https://github.com/Jason-Joseph/Projects" target="_blank" rel="noreferrer">More on GitHub ↗</a>
+        </div></div></div>
+      </section>
+
+      <section class="cell md-cell" id="experience">
+        <div class="prompt" aria-hidden="true"></div>
+        <div class="md"><h2>Experience</h2><p>Fintech and banking, Singapore and Indonesia.</p></div>
+      </section>
+      <section class="cell code" data-run>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre>experience</pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body rich" id="xp-out"></div></div></div>
+      </section>
+      <section class="cell code" data-run>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre>education</pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body df-wrap"><table class="df" id="edu-df"></table></div></div></div>
+      </section>
+
+      <section class="cell md-cell" id="about">
+        <div class="prompt" aria-hidden="true"></div>
+        <div class="md">
+          <h2 data-f="lead"></h2>
+          <div class="portrait"><img data-f="portrait" alt="" /></div>
+          <p data-f="body"></p>
+        </div>
+      </section>
+      <section class="cell code" data-run>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre>skills</pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body stdout" id="skills-out"></div></div></div>
+      </section>
+
+      <section class="cell md-cell" id="contact">
+        <div class="prompt" aria-hidden="true"></div>
+        <div class="md"><h2>Have data worth a closer look?</h2><p data-f="availability"></p></div>
+      </section>
+      <section class="cell code" data-run>
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre>contact</pre></div>
+        <div class="outrow"><div class="prompt out"></div><div class="output"><div class="output-body">
+          <div class="df-wrap"><table class="df" id="contact-df"></table></div>
+          <div class="widgets" style="margin-top:.9rem">
+            <a class="w-btn primary" data-f="mail2">Email me</a>
+            <a class="w-btn" href="/Jason-Joseph-Tjiadi-CV.pdf" download>Download CV ↓</a>
+          </div>
+        </div></div></div>
+      </section>
+
+      <section class="cell code last" aria-label="An empty cell">
+        <div class="prompt in">In [ ]:</div>
+        <div class="input"><pre><span class="caret" aria-hidden="true"></span></pre></div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<footer class="status">
+  <span>Mode: Command</span>
+  <span class="hide-sm" id="ln">Cell 1</span>
+  <span class="hide-sm">jason_portfolio.ipynb</span>
+  <span id="exec">0 cells executed</span>
+  <button type="button" id="motion">Reduce motion</button>
+</footer>
+
+<script type="module">
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
+import Lenis from "lenis";
+import content from "/src/content.ts";
+
+gsap.registerPlugin(ScrollTrigger, SplitText);
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const { profile, about, stats, signal, experience, education, skills, projects, contact } = content;
+// Motion is on by default; only the explicit toggle reduces it.
+let reduced = false;
+
+// ===========================================================================
+// Content
+// ===========================================================================
+$('[data-f="name"]').textContent = profile.name;
+$('[data-f="title"]').textContent = profile.title;
+$('[data-f="loc"]').textContent = contact.location;
+$('[data-f="tagline"]').textContent = profile.tagline;
+for (const k of ["mail", "mail2"]) $(`[data-f="${k}"]`).href = `mailto:${contact.email}`;
+$('[data-f="linkedin"]').href = contact.linkedin;
+$('[data-f="lead"]').textContent = about.lead;
+$('[data-f="body"]').textContent = about.body;
+$('[data-f="availability"]').textContent = contact.availability;
+$('[data-f="story-title"]').textContent = projects.find((p) => p.story).title;
+const pimg = $('[data-f="portrait"]'); pimg.src = profile.photoPath; pimg.alt = `Portrait of ${profile.name}`;
+
+$("#stats-df").innerHTML = `<thead><tr><th></th><th>value</th><th class="l">metric</th></tr></thead><tbody>${
+  stats.map((s, i) => `<tr><th scope="row">${i}</th><td data-count>${esc(s.value)}</td><td class="l">${esc(s.label)}</td></tr>`).join("")}</tbody>`;
+$("#flights").textContent = signal.totalFlights.toLocaleString("en-US");
+
+function proj(p) {
+  const ext = p.link.startsWith("http");
+  const go = p.link.startsWith("mailto:") ? "Ask for a demo" : p.link === "#top" ? "You're on it" : /\.(ipynb|R)$/.test(p.link) ? "Open the code" : p.link.endsWith(".pdf") ? "Open the dashboard" : "Open it";
+  const kind = p.tags.includes("Clustering") ? "cluster" : "regress";
+  const cover = p.image
+    ? `<img src="${esc(p.image)}" alt="${esc(p.imageAlt ?? p.title)}" loading="lazy" />`
+    : `<svg viewBox="0 0 120 90" width="100%" height="100%" role="img" aria-label="${esc(p.title)}, ${kind === "cluster" ? "two clusters" : "a fitted regression line"}">${
+        kind === "cluster"
+          ? [[34, 34, "#1f77b4"], [42, 28, "#1f77b4"], [30, 44, "#1f77b4"], [40, 40, "#1f77b4"], [78, 58, "#ff7f0e"], [86, 50, "#ff7f0e"], [80, 66, "#ff7f0e"], [90, 60, "#ff7f0e"]].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="4.5" fill="${c}"/>`).join("")
+          : `<line x1="14" y1="76" x2="108" y2="16" stroke="#d62728" stroke-width="2"/>` + [[20, 70], [32, 66], [44, 54], [56, 52], [68, 40], [80, 38], [94, 24]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#1f77b4"/>`).join("")
+      }</svg>`;
+  return `<article class="proj"><div class="cover">${cover}</div><div>
+    <h3>${esc(p.title)}${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}</h3>
+    <p>${esc(p.description)}</p>
+    <div class="chips">${p.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+    <a class="open" href="${esc(p.link)}" ${ext ? 'target="_blank" rel="noreferrer"' : ""}>${go} ${ext ? "↗" : "→"}</a>
+  </div></article>`;
+}
+$("#data-out").innerHTML = projects.filter((p) => p.kind === "data" && !p.story).map(proj).join("");
+$("#ai-out").innerHTML = projects.filter((p) => p.kind === "ai").map(proj).join("");
+$("#xp-out").innerHTML = experience.map((x) => `<article class="role"><header>
+  <img src="${esc(x.logo)}" alt="${esc(x.company)} logo" /><span class="when">${esc(x.dates)} · ${esc(x.location)}</span></header>
+  <h3>${esc(x.company)}</h3><p class="what">${esc(x.role)}</p>
+  <ul>${x.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul></article>`).join("");
+$("#edu-df").innerHTML = `<thead><tr><th></th><th class="l">institution</th><th class="l">degree</th><th class="l">dates</th><th class="l">details</th></tr></thead><tbody>${
+  education.map((e, i) => `<tr><th scope="row">${i}</th><td class="l">${esc(e.institution)}</td><td class="l">${esc(e.degree)}</td><td class="l" style="white-space:nowrap">${esc(e.dates)}</td><td class="l">${esc(e.details)}</td></tr>`).join("")}</tbody>`;
+// Python's own repr of the skills dict.
+$("#skills-out").innerHTML = "{" + skills.map((s, i) => `${i ? " " : ""}<span class="s">'${esc(s.category)}'</span>: [${s.items.map((it) => `<span class="s">'${esc(it)}'</span>`).join(", ")}]`).join(",\n") + "}";
+$("#contact-df").innerHTML = `<thead><tr><th class="l">channel</th><th class="l">value</th></tr></thead><tbody>${[
+  ["email", `<a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a>`],
+  ["phone", `<a href="tel:${esc(contact.phone.replace(/\s/g, ""))}">${esc(contact.phone)}</a>`],
+  ["linkedin", `<a href="${esc(contact.linkedin)}" target="_blank" rel="noreferrer">in/jasontjiadi ↗</a>`],
+  ["github", `<a href="${esc(contact.github)}" target="_blank" rel="noreferrer">Jason-Joseph ↗</a>`],
+  ["location", esc(contact.location)],
+].map(([k, v]) => `<tr><th scope="row" class="l">${k}</th><td class="l">${v}</td></tr>`).join("")}</tbody>`;
+
+// ---- the plot: matplotlib grammar, zero baseline ------------------------------
+const days = signal.days, worst = days[signal.worstIndex], best = days[signal.bestIndex];
+const dayName = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
+{
+  const W = 640, H = 330, L = 56, R = 16, T = 18, B = 46;
+  const pw = W - L - R, ph = H - T - B, step = pw / days.length, bw = step * 0.62;
+  const y = (v) => T + ph - (v / signal.axisMax) * ph;
+  let g = "";
+  for (let v = 0; v <= signal.axisMax; v += 10) {
+    g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v ? "#ececec" : "#1b1f27"}" stroke-width="1"/>`;
+    g += `<text x="${L - 8}" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="#4a505c">${v}</text>`;
+  }
+  g += `<line x1="${L}" x2="${L}" y1="${T}" y2="${T + ph}" stroke="#1b1f27"/>`;
+  days.forEach((d, i) => {
+    const x = L + i * step + (step - bw) / 2;
+    g += `<rect class="bar" data-i="${i}" x="${x}" y="${y(d.minutes)}" width="${bw}" height="${T + ph - y(d.minutes)}" fill="#1f77b4"/>`;
+    g += `<text class="val" data-i="${i}" x="${x + bw / 2}" y="${y(d.minutes) - 6}" text-anchor="middle" font-size="12" fill="#1b1f27">${d.minutes.toFixed(1)}</text>`;
+    g += `<text x="${x + bw / 2}" y="${T + ph + 18}" text-anchor="middle" font-size="12" fill="#4a505c">${d.day}</text>`;
+  });
+  g += `<text x="${L + pw / 2}" y="${H - 6}" text-anchor="middle" font-size="12" fill="#4a505c">DayOfWeek</text>`;
+  g += `<text x="14" y="${T + ph / 2}" text-anchor="middle" font-size="12" fill="#4a505c" transform="rotate(-90 14 ${T + ph / 2})">avg total delay (min)</text>`;
+  $("#plot").insertAdjacentHTML("beforeend", g);
+}
+$("#finding").innerHTML = `<strong>${dayName[worst.day]}</strong> is the worst day to fly (${worst.minutes.toFixed(1)} min). <strong>${dayName[best.day]}</strong> is calmest (${best.minutes.toFixed(1)} min). <mark>By six minutes.</mark> The day barely matters. That's the finding.`;
+$("#method").textContent = signal.method;
+$("#notebook").href = signal.notebook;
+$("#sr-table").innerHTML = `<caption>Average total flight delay by day of week, from ${signal.totalFlights.toLocaleString("en-US")} US domestic flights, 2002 to 2003</caption><tbody>${days.map((d) => `<tr><th scope="row">${d.day}</th><td>${d.minutes.toFixed(1)} minutes</td></tr>`).join("")}</tbody>`;
+
+// ===========================================================================
+// Motion
+// ===========================================================================
+const lenis = new Lenis({ duration: 1.15, easing: (x) => Math.min(1, 1.001 - Math.pow(2, -10 * x)), smoothWheel: true });
+lenis.on("scroll", ScrollTrigger.update);
+gsap.ticker.add((time) => lenis.raf(time * 1000));
+gsap.ticker.lagSmoothing(0);
+document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener("click", (e) => {
+  const id = a.getAttribute("href");
+  if (id.length < 2) return;
+  e.preventDefault();
+  lenis.scrollTo(id, { offset: -96, duration: reduced ? 0 : 1.4 });
+}));
+
+// The title cell: lines rise out of their own masks, once.
+document.fonts.ready.then(() => {
+  const split = SplitText.create("#h1", { type: "lines", mask: "lines" });
+  gsap.from(split.lines, { yPercent: 105, duration: 1.1, ease: "expo.out", stagger: 0.09, delay: 0.1 });
+});
+gsap.from(".md-cell:first-of-type .meta, .md-cell:first-of-type p:not(.meta)", { opacity: 0, y: 10, duration: 0.9, ease: "power3.out", delay: 0.5, stagger: 0.08 });
+
+// ---- the kernel: cells execute strictly in order, never in parallel ----------
+const kernel = $("#kernel"), kstate = $("#kstate"), execEl = $("#exec");
+let execCount = 0;
+const queue = [];
+let running = false;
+const cells = [...document.querySelectorAll(".cell[data-run]")];
+cells.forEach((c) => c.classList.add("pending"));
+
+function countUp(el) {
+  const full = el.textContent;
+  const m = full.match(/[\d,]+(\.\d+)?/);
+  if (!m || reduced) return;
+  const target = parseFloat(m[0].replace(/,/g, ""));
+  const decimals = m[1] ? m[1].length - 1 : 0;
+  const o = { v: 0 };
+  gsap.to(o, {
+    v: target, duration: 1.3, ease: "power3.out",
+    onUpdate: () => {
+      const s = decimals ? o.v.toFixed(decimals) : Math.round(o.v).toLocaleString("en-US");
+      el.textContent = full.replace(m[0], s);
+    },
+    onComplete: () => { el.textContent = full; },
+  });
+}
+function drawChart(cell) {
+  const bars = [...cell.querySelectorAll(".bar")], vals = [...cell.querySelectorAll(".val")];
+  const finalFill = (i) => (i === signal.bestIndex ? "#2ca02c" : "#9ec4e2");
+  if (reduced) { bars.forEach((b, i) => b.setAttribute("fill", finalFill(i))); return; }
+  // Bars rise from the zero baseline, then the two days that matter speak up.
+  gsap.timeline()
+    .from(bars, { scaleY: 0, transformOrigin: "50% 100%", duration: 0.9, ease: "power3.out", stagger: 0.06 })
+    .from(vals, { opacity: 0, duration: 0.4, stagger: 0.04 }, "-=0.4")
+    .to(bars.filter((_, i) => i !== signal.worstIndex), { attr: { fill: "#9ec4e2" }, duration: 0.5 }, "+=0.4")
+    .to(bars[signal.worstIndex], { attr: { fill: "#d62728" }, duration: 0.5 }, "<")
+    .to(bars[signal.worstIndex], { attr: { fill: "#9ec4e2" }, duration: 0.5 }, "+=1.1")
+    .to(bars[signal.bestIndex], { attr: { fill: "#2ca02c" }, duration: 0.5 }, "<")
+    .from("#finding", { opacity: 0, y: 8, filter: "blur(6px)", duration: 0.8, ease: "power3.out", clearProps: "filter,transform" }, "<");
+}
+function reveal(cell) {
+  const body = cell.querySelector(".output-body");
+  cell.classList.remove("pending");
+  cell.querySelector(".prompt.out").textContent = cell.querySelector(".prompt.in").textContent.replace("In ", "Out");
+  if (!reduced) gsap.fromTo(body, { opacity: 0, y: 6, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.75, ease: "power3.out", clearProps: "filter,transform,opacity" });
+  body.querySelectorAll("[data-count]").forEach(countUp);
+  if (body.matches("[data-count]")) countUp(body);
+  if (cell.matches("[data-chart]")) drawChart(cell);
+}
+async function pump() {
+  if (running) return;
+  running = true;
+  kernel.dataset.busy = "true"; kstate.textContent = "Kernel busy";
+  while (queue.length) {
+    const { cell, fast } = queue.shift();
+    if (!cell.classList.contains("pending")) continue;
+    const p = cell.querySelector(".prompt.in");
+    p.textContent = "In [*]:";
+    if (!reduced) await new Promise((r) => setTimeout(r, fast ? 160 : 380 + Math.random() * 320));
+    execCount += 1;
+    p.textContent = `In [${execCount}]:`;
+    execEl.textContent = `${execCount} cell${execCount === 1 ? "" : "s"} executed`;
+    reveal(cell);
+  }
+  kernel.dataset.busy = "false"; kstate.textContent = "Kernel idle";
+  running = false;
+}
+const enqueue = (cell, fast = false) => {
+  if (cell.classList.contains("pending") && !queue.some((q) => q.cell === cell)) queue.push({ cell, fast });
+  pump();
+};
+// Cells always run top to bottom, like a notebook run in order: reaching a
+// cell first runs every pending cell above it (quickly), so In [n] matches
+// reading order even when the reader jumps ahead from the menu.
+cells.forEach((cell, idx) => ScrollTrigger.create({
+  trigger: cell, start: "top 88%", once: true,
+  onEnter: () => cells.slice(0, idx + 1).forEach((c, j) => enqueue(c, j < idx)),
+}));
+$("#runall").addEventListener("click", () => cells.forEach((c) => enqueue(c, true)));
+
+// ---- the selection bar glides to the cell being read --------------------------
+const selbar = $("#selbar"), nb = $(".nb");
+const allCells = [...document.querySelectorAll(".cell")];
+const sections = [...document.querySelectorAll(".cell[id]")];
+let selected = null;
+function select() {
+  const line = innerHeight * 0.42;
+  const hit = allCells.find((c) => { const r = c.getBoundingClientRect(); return r.top <= line && r.bottom >= line; }) || allCells[0];
+  const sec = sections.filter((c) => c.getBoundingClientRect().top <= line).at(-1)?.id;
+  document.querySelectorAll(".menu a").forEach((a) => a.setAttribute("aria-current", String(a.getAttribute("href") === `#${sec}`)));
+  if (hit === selected) return;
+  selected = hit;
+  const nr = nb.getBoundingClientRect(), r = hit.getBoundingClientRect();
+  gsap.to(selbar, { top: r.top - nr.top, height: r.height, duration: reduced ? 0 : 0.45, ease: "power3.out" });
+  $("#ln").textContent = `Cell ${allCells.indexOf(hit) + 1} of ${allCells.length}`;
+}
+lenis.on("scroll", select);
+addEventListener("resize", () => { selected = null; select(); });
+select();
+
+// ---- outputs only: the report a recruiter wants ------------------------------
+$("#outonly").addEventListener("click", (e) => {
+  const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+  e.currentTarget.setAttribute("aria-pressed", String(on));
+  document.documentElement.classList.toggle("outputs-only", on);
+  if (on) cells.forEach((c) => enqueue(c, true));
+  ScrollTrigger.refresh(); selected = null; select();
+});
+
+$("#motion").addEventListener("click", (e) => {
+  reduced = !reduced;
+  document.documentElement.classList.toggle("reduced", reduced);
+  e.currentTarget.textContent = reduced ? "Enable motion" : "Reduce motion";
+});
+</script>
+</body>
+</html>

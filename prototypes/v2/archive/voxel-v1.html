@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>JJT · Pixel Island — v2 mockup D</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #1e2430;
+    --paper: #fbfcff;
+    --muted: #586174;
+    --sky-top: #8ec5fc;
+    --sky-low: #fde6c8;
+    --teal: #1a9e84;          /* Saturday, the calm day */
+    --coral: #e8735a;         /* Friday, the worst day */
+    --pixel: "Pixelify Sans", system-ui, sans-serif;
+    --body: "Manrope", system-ui, sans-serif;
+    --gutter: clamp(1rem, 4vw, 3.5rem);
+    /* Stepped "pixel-rounded" corners, the dialog-box corner of the world. */
+    --steps: polygon(0 8px, 4px 8px, 4px 4px, 8px 4px, 8px 0, calc(100% - 8px) 0, calc(100% - 8px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 4px) calc(100% - 8px), calc(100% - 4px) calc(100% - 4px), calc(100% - 8px) calc(100% - 4px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 8px), 0 calc(100% - 8px));
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: var(--body); color: var(--ink); font-size: 16px; line-height: 1.6;
+    background: linear-gradient(180deg, var(--sky-top) 0%, #bfdcf7 45%, var(--sky-low) 100%) fixed;
+    overflow-x: clip;
+  }
+  ::selection { background: var(--ink); color: var(--paper); }
+  a { color: inherit; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+  /* The world: rendered at low resolution and upscaled with hard pixels. */
+  #world {
+    position: fixed; inset: 0; width: 100vw; height: 100lvh; z-index: 0;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+    opacity: 0; transition: opacity 1.2s ease;
+  }
+  #world.on { opacity: 1; }
+
+  /* --- top bar: mark + an island map of pixel stops ---------------------- */
+  .bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: max(.9rem, env(safe-area-inset-top)) var(--gutter) .9rem;
+    pointer-events: none;
+  }
+  .bar > * { pointer-events: auto; }
+  .mark { font-family: var(--pixel); font-weight: 700; font-size: 1.5rem; letter-spacing: .04em; text-decoration: none; color: var(--ink); display: inline-flex; align-items: center; min-height: 44px; }
+  .mark i { display: inline-block; width: 8px; height: 8px; background: var(--teal); margin-left: 4px; transform: translateY(5px); }
+  .map { display: flex; gap: 6px; align-items: center; }
+  .map a { width: 44px; height: 44px; display: grid; place-items: center; text-decoration: none; }
+  .map a span { width: 12px; height: 12px; background: rgba(30,36,48,.25); transition: background-color .4s ease, transform .4s cubic-bezier(.2,.8,.2,1); }
+  .map a[aria-current="true"] span { background: var(--ink); transform: scale(1.35); }
+  .map a:hover span { background: var(--ink); }
+
+  /* --- the floating landmark label --------------------------------------- */
+  .tag {
+    position: fixed; left: 0; top: 0; z-index: 5; pointer-events: none;
+    font-family: var(--pixel); font-weight: 600; font-size: .85rem; letter-spacing: .06em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper); padding: .3rem .6rem;
+    transform: translate(-50%, -100%); opacity: 0; transition: opacity .5s ease;
+    clip-path: var(--steps); white-space: nowrap;
+  }
+  .tag.on { opacity: 1; }
+
+  /* --- story: scroll stops, one per landmark ----------------------------- */
+  main { position: relative; z-index: 2; }
+  .stop {
+    min-height: 100svh; display: flex; align-items: center;
+    padding: 6rem var(--gutter) 4rem;
+  }
+  .frame { width: min(31rem, 100%); filter: drop-shadow(0 18px 30px rgba(30,36,48,.18)); }
+  .panel { background: var(--ink); padding: 3px; clip-path: var(--steps); }
+  .panel > .in { background: var(--paper); clip-path: var(--steps); padding: clamp(1.2rem, 3vw, 1.9rem); }
+  .chip {
+    display: inline-flex; align-items: center; gap: .45rem; font-family: var(--pixel); font-weight: 600; font-size: .78rem;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+  }
+  .chip i { width: 10px; height: 10px; background: var(--c, var(--teal)); display: inline-block; }
+  h1, h2 { font-family: var(--pixel); font-weight: 700; letter-spacing: .01em; line-height: 1.04; text-wrap: balance; }
+  h1 { font-size: clamp(2.2rem, 4.6vw, 3.4rem); margin-top: .7rem; }
+  .name { font-family: var(--pixel); font-size: 1.1rem; margin-top: .9rem; }
+  h2 { font-size: clamp(1.7rem, 3.2vw, 2.4rem); margin-top: .6rem; }
+  h3 { font-size: 1.04rem; line-height: 1.3; font-weight: 700; }
+  .lead { margin-top: 1rem; }
+  .muted { color: var(--muted); }
+  .small { font-size: .86rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.4rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem; min-height: 46px; padding: .7rem 1.1rem;
+    font-family: var(--pixel); font-weight: 600; font-size: .95rem; letter-spacing: .03em; text-decoration: none;
+    /* A plain 3px square border: a stepped clip-path would cut an outline at
+       every corner and leave bracket-shaped gaps. Filled shapes clip cleanly;
+       outlined ones do not. */
+    background: var(--paper); color: var(--ink); border: 3px solid var(--ink); cursor: pointer;
+    transition: transform .25s cubic-bezier(.2,.8,.2,1), background-color .2s ease, color .2s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.primary { background: var(--ink); color: var(--paper); }
+  .btn.primary:hover { background: var(--teal); }
+  .hint { margin-top: 1.4rem; font-family: var(--pixel); font-size: .85rem; color: var(--muted); display: flex; align-items: center; gap: .5rem; }
+  .hint i { width: 8px; height: 8px; background: var(--muted); animation: blink 1.4s steps(2, jump-none) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Lists of work inside a panel. */
+  .work { display: grid; gap: 1.1rem; margin-top: 1.2rem; }
+  .work article { display: grid; grid-template-columns: 5.6rem minmax(0, 1fr); gap: .9rem; padding-top: 1.1rem; border-top: 2px dashed rgba(30,36,48,.18); }
+  .work article:first-child { border-top: 0; padding-top: 0; }
+  .work .thumb { aspect-ratio: 1; background: #e9edf5; overflow: hidden; clip-path: var(--steps); }
+  .work .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .work .thumb.glyph { display: grid; place-items: center; background: var(--ink); }
+  .work p { font-size: .9rem; margin-top: .3rem; }
+  .tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .45rem; }
+  .tags span { font-family: var(--pixel); font-size: .72rem; letter-spacing: .04em; padding: .1rem .45rem; background: #eef1f7; }
+  .go { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--pixel); font-weight: 600; font-size: .88rem; text-underline-offset: 4px; }
+  .badge { font-family: var(--pixel); font-size: .68rem; background: var(--teal); color: #fff; padding: .05rem .4rem; margin-left: .35rem; vertical-align: .1em; }
+
+  /* The Signal panel: a precise chart beside the island's towers. */
+  .beat { font-family: var(--pixel); font-weight: 600; font-size: clamp(1.25rem, 2.4vw, 1.6rem); line-height: 1.15; margin-top: .9rem; min-height: 2.4em; }
+  .beat em { font-style: normal; background: #d8f2ea; box-shadow: 0 0 0 3px #d8f2ea; }
+  .num { font-family: var(--pixel); font-weight: 700; font-size: clamp(2.2rem, 5vw, 3rem); line-height: 1; font-variant-numeric: tabular-nums; margin-top: .4rem; }
+  .num small { display: block; font-family: var(--body); font-size: .82rem; font-weight: 500; color: var(--muted); margin-top: .3rem; }
+  .mini { display: grid; grid-template-columns: repeat(7, 1fr); gap: .4rem; align-items: end; height: 120px; margin-top: 1.1rem; border-bottom: 3px solid var(--ink); position: relative; }
+  .mini::before { content: ""; position: absolute; left: 0; right: 0; top: 0; border-top: 2px dotted rgba(30,36,48,.25); }
+  .mini div { position: relative; height: 0; background: #d9dee8; transition: height 1s cubic-bezier(.2,.8,.2,1), background-color .5s ease; }
+  .mini div span { position: absolute; left: 50%; bottom: calc(100% + 3px); transform: translateX(-50%); font-family: var(--pixel); font-size: .68rem; opacity: 0; transition: opacity .5s ease; }
+  .mini div b { position: absolute; left: 50%; top: calc(100% + 6px); transform: translateX(-50%); font-family: var(--pixel); font-weight: 600; font-size: .68rem; }
+  .mini[data-beat="1"] span, .mini[data-beat="2"] span, .mini[data-beat="3"] span { opacity: 1; }
+  .mini[data-beat="2"] .worst { background: var(--coral); }
+  .mini[data-beat="3"] .best { background: var(--teal); }
+  .axis-note { display: flex; justify-content: space-between; font-family: var(--pixel); font-size: .68rem; color: var(--muted); margin-top: 1.7rem; }
+  .steps { display: flex; gap: .4rem; margin-top: 1rem; }
+  .steps button { width: 44px; height: 44px; border: 0; cursor: pointer; font-family: var(--pixel); font-weight: 700; background: #eef1f7; color: var(--ink); clip-path: var(--steps); transition: background-color .25s ease; }
+  .steps button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+
+  .xp { display: grid; gap: 1.3rem; margin-top: 1.1rem; }
+  .xp article { padding-top: 1.1rem; border-top: 2px dashed rgba(30,36,48,.18); }
+  .xp article:first-child { border-top: 0; padding-top: 0; }
+  .xp .when { font-family: var(--pixel); font-size: .8rem; color: var(--muted); }
+  .xp ul { margin-top: .5rem; padding-left: 1.1rem; display: grid; gap: .35rem; font-size: .9rem; }
+  .logo { height: 26px; width: auto; margin-bottom: .6rem; }
+
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-top: 1.2rem; }
+  .stats div { background: #eef1f7; padding: .7rem .8rem; clip-path: var(--steps); }
+  .stats strong { display: block; font-family: var(--pixel); font-size: 1.4rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stats span { font-size: .78rem; color: var(--muted); }
+  .portrait { width: 7rem; aspect-ratio: 1; clip-path: var(--steps); overflow: hidden; float: right; margin: 0 0 .6rem 1rem; }
+  .portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
+  .skills { display: grid; gap: .7rem; margin-top: 1.1rem; }
+  .skills p { font-size: .9rem; }
+  .skills b { font-family: var(--pixel); font-weight: 600; font-size: .82rem; display: block; color: var(--muted); }
+  .rail { list-style: none; padding: 0; margin-top: 1.1rem; display: grid; gap: .2rem; }
+  .rail li { display: flex; justify-content: space-between; gap: 1rem; align-items: center; min-height: 44px; border-top: 2px dashed rgba(30,36,48,.15); font-size: .92rem; }
+  .rail li span { font-family: var(--pixel); font-size: .8rem; color: var(--muted); }
+  .rail a { text-decoration: none; font-weight: 700; overflow-wrap: anywhere; text-align: right; }
+  .foot { margin-top: 1.3rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; font-family: var(--pixel); font-size: .78rem; color: var(--muted); }
+  .foot button { font: inherit; color: inherit; background: none; border: 0; text-decoration: underline; cursor: pointer; min-height: 44px; }
+
+  /* No WebGL: the panels still carry everything over the sky. */
+  .no-gl #world { display: none; }
+
+  @media (max-width: 900px) {
+    .stop { align-items: flex-end; padding-top: 46svh; padding-bottom: 2.5rem; }
+    .frame { width: 100%; }
+    .map { gap: 0; }
+    .map a { width: 30px; }
+    .portrait { width: 5.5rem; }
+  }
+  @media (max-width: 420px) {
+    .map a:nth-child(n+7) { display: none; }
+  }
+  /* Motion is on by default and only the footer toggle reduces it. Jason's
+     own Windows machine reports prefers-reduced-motion, which flattened the
+     live site twice when it was honored as the default. */
+  .reduced *, .reduced *::before, .reduced *::after { transition-duration: .01ms !important; animation: none !important; }
+</style>
+</head>
+<body>
+<!--
+THESIS: The portfolio is a small voxel island you glide across: every section a landmark, every figure built at true scale. It refuses the dark dev hero and the cream editorial page.
+OWN-WORLD: Dawn sky blue to peach; voxel island in grass, sand, and dirt, rendered low-res and upscaled with hard pixels; pixel-dialog panels in ink and cool white with stepped corners; Pixelify Sans headings over Manrope body; Saturday teal, Friday coral.
+STORY: A recruiter reads the first dialog box in seconds; a data lead tours the airport whose towers stand at the real delay heights, then opens the notebook.
+FIRST VIEWPORT: The whole island at dawn with a voxel Jason on the centre hill; the first dialog box left with the headline and Email me as the ink button.
+FORM: 3D pixel world, pinned by Jason (beats the roll); seed bab1784c, re-roll 1.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<canvas id="world" aria-hidden="true"></canvas>
+<div class="tag" id="tag" aria-hidden="true"></div>
+
+<header class="bar">
+  <a class="mark" href="#hero" aria-label="JJT, back to top">JJT<i></i></a>
+  <nav class="map" id="map" aria-label="Island map"></nav>
+</header>
+
+<main id="story">
+  <section class="stop" id="hero" data-wp="hero" data-label="Home hill">
+    <div class="frame"><div class="panel"><div class="in">
+      <span class="chip" style="--c:var(--teal)"><i></i><span data-f="title"></span> · <span data-f="loc"></span></span>
+      <h1>Numbers made legible. Decisions made easier.</h1>
+      <p class="name" data-f="name"></p>
+      <p class="lead" data-f="tagline"></p>
+      <div class="actions">
+        <a class="btn primary" data-f="mail">Email me</a>
+        <a class="btn" data-f="linkedin" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+        <a class="btn" href="/Jason-Joseph-Tjiadi-CV.pdf" download>Download CV ↓</a>
+      </div>
+      <p class="hint"><i></i>Scroll to tour the island · NUS · LSE</p>
+    </div></div></div>
+  </section>
+
+  <section class="stop" id="signal" data-wp="signal" data-label="The airport">
+    <div class="frame"><div class="panel"><div class="in">
+      <span class="chip" style="--c:var(--coral)"><i></i>Featured analysis · 2002–2003</span>
+      <h2>Airline Flight Delay Analysis</h2>
+      <p class="beat" id="beat" aria-live="polite"></p>
+      <p class="num" id="num"></p>
+      <div class="mini" id="mini" data-beat="0" aria-hidden="true"></div>
+      <div class="axis-note" aria-hidden="true"><span>0 min baseline</span><span id="axis-top"></span></div>
+      <div class="steps" id="steps" role="group" aria-label="Story step"></div>
+      <p class="small muted" style="margin-top:1rem" id="method"></p>
+      <div class="actions"><a class="btn" id="notebook" target="_blank" rel="noreferrer">See the notebook ↗</a></div>
+      <div style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)"><table id="sr-table"></table></div>
+    </div></div></div>
+  </section>
+
+  <section class="stop" id="data" data-wp="data" data-label="Data district">
+    <div class="frame"><div class="panel"><div class="in">
+      <span class="chip" style="--c:#3b7dd8"><i></i>Data work</span>
+      <h2>Analyses, from raw data to the final call</h2>
+      <div class="work" id="data-work"></div>
+    </div></div></div>
+  </section>
+
+  <section class="stop" id="ai" data-wp="ai" data-label="The workshop">
+    <div class="frame"><div class="panel"><div class="in">
+      <span class="chip" style="--c:#7a5af8"><i></i>Built with AI</span>
+      <h2>Things I shipped with Claude Code</h2>
+      <div class="work" id="ai-work"></div>
+      <div class="actions"><a class="btn" href="https://github.com/Jason-Joseph/Projects" target="_blank" rel="noreferrer">More on GitHub ↗</a></div>
+    </div></div></div>
+  </section>
+
+  <section class="stop" id="career" data-wp="career" data-label="Fintech quarter">
+    <div class="frame"><div class="panel"><div class="in">
+      <span class="chip" style="--c:var(--coral)"><i></i>Experience</span>
+      <h2>Fintech and banking, Singapore and Indonesia</h2>
+      <div class="xp" id="xp"></div>
+    </div></div></div>
+  </section>
+
+  <section class="stop" id="education" data-wp="education" data-label="Campus">
+    <div class="frame"><div class="panel"><div class="in">
+      <span class="chip" style="--c:#ef7c00"><i></i>Education</span>
+      <h2>Two degrees, both in data</h2>
+      <div class="xp" id="edu"></div>
+    </div></div></div>
+  </section>
+
+  <section class="stop" id="about" data-wp="about" data-label="Jason">
+    <div class="frame"><div class="panel"><div class="in">
+      <div class="portrait"><img data-f="portrait" alt="" /></div>
+      <span class="chip"><i></i>About</span>
+      <h2 data-f="lead"></h2>
+      <p class="lead" data-f="body" style="clear:both"></p>
+      <div class="stats" id="stats"></div>
+      <div class="skills" id="skills"></div>
+    </div></div></div>
+  </section>
+
+  <section class="stop" id="contact" data-wp="contact" data-label="The lighthouse">
+    <div class="frame"><div class="panel"><div class="in">
+      <span class="chip"><i></i>Contact</span>
+      <h2>Have data worth a closer look?</h2>
+      <p class="lead" data-f="availability"></p>
+      <div class="actions">
+        <a class="btn primary" data-f="mail2">Email me</a>
+        <a class="btn" href="/Jason-Joseph-Tjiadi-CV.pdf" download>Download CV ↓</a>
+      </div>
+      <ul class="rail" id="rail"></ul>
+      <div class="foot"><span>v2 mockup D · Pixel Island</span><button type="button" id="motion">Reduce motion</button></div>
+    </div></div></div>
+  </section>
+</main>
+
+<script type="module">
+import * as THREE from "three";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
+import content from "/src/content.ts";
+
+gsap.registerPlugin(ScrollTrigger);
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const { profile, about, stats, signal, experience, education, skills, projects, contact } = content;
+// Motion is on by default; only the explicit toggle reduces it.
+let reduced = false;
+const isPhone = () => innerWidth <= 900;
+
+// ===========================================================================
+// Content
+// ===========================================================================
+$('[data-f="title"]').textContent = profile.title;
+$('[data-f="loc"]').textContent = contact.location;
+$('[data-f="name"]').textContent = profile.name;
+$('[data-f="tagline"]').textContent = profile.tagline;
+for (const k of ["mail", "mail2"]) $(`[data-f="${k}"]`).href = `mailto:${contact.email}`;
+$('[data-f="linkedin"]').href = contact.linkedin;
+$('[data-f="lead"]').textContent = about.lead;
+$('[data-f="body"]').textContent = about.body;
+$('[data-f="availability"]').textContent = contact.availability;
+const pimg = $('[data-f="portrait"]'); pimg.src = profile.photoPath; pimg.alt = `Portrait of ${profile.name}`;
+
+const glyph = (kind) => kind === "cluster"
+  ? '<svg viewBox="0 0 10 10" width="56" height="56" aria-hidden="true" shape-rendering="crispEdges" fill="#fbfcff"><rect x="2" y="2" width="2" height="2"/><rect x="3" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="6" y="6" width="2" height="2"/><rect x="7" y="5" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/></svg>'
+  : '<svg viewBox="0 0 10 10" width="56" height="56" aria-hidden="true" shape-rendering="crispEdges" fill="#fbfcff"><rect x="1" y="8" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="4" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/></svg>';
+function workItem(p) {
+  const ext = p.link.startsWith("http");
+  const go = p.link.startsWith("mailto:") ? "Ask for a demo" : p.link === "#top" ? "You're on it" : /\.(ipynb|R)$/.test(p.link) ? "Open the code" : p.link.endsWith(".pdf") ? "Open the dashboard" : "Open it";
+  const href = p.link === "#top" ? "#hero" : p.link;
+  const thumb = p.image
+    ? `<div class="thumb"><img src="${esc(p.image)}" alt="${esc(p.imageAlt ?? p.title)}" loading="lazy" /></div>`
+    : `<div class="thumb glyph">${glyph(p.tags.includes("Clustering") ? "cluster" : "regress")}</div>`;
+  return `<article>${thumb}<div>
+    <h3>${esc(p.title)}${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}</h3>
+    <p>${esc(p.description)}</p>
+    <div class="tags">${p.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>
+    <a class="go" href="${esc(href)}" ${ext ? 'target="_blank" rel="noreferrer"' : ""}>${go} ${ext ? "↗" : "→"}</a>
+  </div></article>`;
+}
+const dataP = projects.filter((p) => p.kind === "data" && !p.story);
+const aiP = projects.filter((p) => p.kind === "ai");
+$("#data-work").innerHTML = dataP.map(workItem).join("");
+$("#ai-work").innerHTML = aiP.map(workItem).join("");
+$("#xp").innerHTML = experience.map((x) => `<article>
+  <img class="logo" src="${esc(x.logo)}" alt="${esc(x.company)} logo" />
+  <h3>${esc(x.company)}</h3><p class="when">${esc(x.role)}</p><p class="when">${esc(x.location)} · ${esc(x.dates)}</p>
+  <ul>${x.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul></article>`).join("");
+$("#edu").innerHTML = education.map((e) => `<article>
+  <img class="logo" src="${esc(e.logo)}" alt="${esc(e.institution)} logo" />
+  <h3>${esc(e.institution)}</h3><p>${esc(e.degree)}</p><p class="when">${esc(e.dates)}</p><p class="small muted" style="margin-top:.3rem">${esc(e.details)}</p></article>`).join("");
+$("#stats").innerHTML = stats.map((s) => `<div><strong>${esc(s.value)}</strong><span>${esc(s.label)}</span></div>`).join("");
+$("#skills").innerHTML = skills.map((s) => `<p><b>${esc(s.category)}</b>${s.items.map(esc).join(" · ")}</p>`).join("");
+$("#rail").innerHTML = [
+  ["Email", `<a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a>`],
+  ["Phone", `<a href="tel:${esc(contact.phone.replace(/\s/g, ""))}">${esc(contact.phone)}</a>`],
+  ["LinkedIn", `<a href="${esc(contact.linkedin)}" target="_blank" rel="noreferrer">in/jasontjiadi ↗</a>`],
+  ["GitHub", `<a href="${esc(contact.github)}" target="_blank" rel="noreferrer">Jason-Joseph ↗</a>`],
+  ["Location", `<strong>${esc(contact.location)}</strong>`],
+].map(([k, v]) => `<li><span>${k}</span>${v}</li>`).join("");
+
+// The island map in the bar: one pixel per landmark.
+const stops = [...document.querySelectorAll(".stop")];
+$("#map").innerHTML = stops.map((s) => `<a href="#${s.id}" aria-label="${esc(s.dataset.label)}"><span></span></a>`).join("");
+
+// ---- The Signal panel -------------------------------------------------------
+const days = signal.days, worst = days[signal.worstIndex], best = days[signal.bestIndex];
+const dayName = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
+$("#mini").innerHTML = days.map((d, i) => `<div class="${i === signal.worstIndex ? "worst" : ""} ${i === signal.bestIndex ? "best" : ""}" data-h="${(d.minutes / signal.axisMax) * 100}"><span>${d.minutes.toFixed(1)}</span><b>${d.day}</b></div>`).join("");
+$("#axis-top").textContent = `${signal.axisMax} min`;
+$("#method").textContent = signal.method;
+$("#notebook").href = signal.notebook;
+$("#sr-table").innerHTML = `<caption>Average total flight delay by day of week, from ${signal.totalFlights.toLocaleString("en-US")} US domestic flights, 2002 to 2003</caption><tbody>${days.map((d) => `<tr><th scope="row">${d.day}</th><td>${d.minutes.toFixed(1)} minutes</td></tr>`).join("")}</tbody>`;
+const beats = [
+  { cap: "Two years of US domestic aviation.", num: `<span id="ctr">0</span><small>flights</small>` },
+  { cap: "Average total delay, <em>by day of week</em>.", num: `0–${signal.axisMax}<small>minutes · the towers are to scale</small>` },
+  { cap: `${dayName[worst.day]} is the worst day to fly.`, num: `${worst.minutes.toFixed(1)}<small>minutes on ${dayName[worst.day]}</small>` },
+  { cap: `${dayName[best.day]} is calmest. <em>By six minutes.</em> The day barely matters. That's the finding.`, num: `${best.minutes.toFixed(1)}<small>minutes on ${dayName[best.day]}</small>` },
+];
+$("#steps").innerHTML = beats.map((_, i) => `<button type="button" aria-pressed="false" aria-label="Step ${i + 1} of 4">${i + 1}</button>`).join("");
+let beat = -1, beatTimer = null;
+const onBeat = [];
+function setBeat(n) {
+  beat = n;
+  $("#beat").innerHTML = beats[n].cap;
+  $("#num").innerHTML = beats[n].num;
+  $("#mini").dataset.beat = String(n);
+  document.querySelectorAll("#mini > div").forEach((b) => { b.style.height = n >= 1 ? `${b.dataset.h}%` : "0"; });
+  document.querySelectorAll("#steps button").forEach((b, i) => b.setAttribute("aria-pressed", String(i === n)));
+  onBeat.forEach((f) => f(n));
+  if (n === 0) {
+    const el = $("#ctr");
+    if (reduced) { el.textContent = signal.totalFlights.toLocaleString("en-US"); return; }
+    const o = { v: 0 };
+    gsap.to(o, { v: signal.totalFlights, duration: 1.6, ease: "power3.out", onUpdate: () => { el.textContent = Math.round(o.v).toLocaleString("en-US"); } });
+  }
+}
+$("#steps").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  clearInterval(beatTimer); setBeat([...b.parentNode.children].indexOf(b));
+});
+function playBeats() {
+  if (beat !== -1) return;
+  if (reduced) return setBeat(3);
+  setBeat(0);
+  beatTimer = setInterval(() => (beat >= 3 ? clearInterval(beatTimer) : setBeat(beat + 1)), 2600);
+}
+
+// ===========================================================================
+// The island (three.js)
+// ===========================================================================
+const canvas = $("#world");
+let renderer = null;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: "high-performance" });
+} catch {
+  document.documentElement.classList.add("no-gl");
+}
+
+const WP = {
+  hero:      { tx: 0,   ty: 3,   tz: 0,   zoom: 0.95, az: 0.785, el: 0.62 },
+  signal:    { tx: 18,  ty: 5,   tz: -9,  zoom: 1.55, az: 0.98,  el: 0.5 },
+  data:      { tx: -6,  ty: 3,   tz: -16, zoom: 1.65, az: 0.55,  el: 0.6 },
+  ai:        { tx: -17, ty: 3.5, tz: 3,   zoom: 1.65, az: 1.15,  el: 0.58 },
+  career:    { tx: 9,   ty: 5,   tz: 16,  zoom: 1.45, az: 0.45,  el: 0.5 },
+  education: { tx: -11, ty: 3.5, tz: 15,  zoom: 1.75, az: 0.9,   el: 0.6 },
+  about:     { tx: 0,   ty: 8,   tz: 0,   zoom: 3.4,  az: 0.785, el: 0.32 },
+  contact:   { tx: 23,  ty: 2.5, tz: 14,  zoom: 1.6,  az: 0.6,   el: 0.45 },
+};
+const ANCHOR = {
+  hero: [0, 9.6, 0], signal: [18, 13, -10], data: [-6, 9, -17], ai: [-17, 9, 3],
+  career: [7, 16, 18], education: [-11, 9, 15], about: [0, 9.6, 0], contact: [28, 11, 13],
+};
+
+if (renderer) buildWorld();
+
+function buildWorld() {
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog("#f3dcc4", 120, 230);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.BasicShadowMap; // crisp, pixel-true shadows
+
+  // ---- voxels: one instanced mesh, keyed so later writes overwrite --------
+  const vox = new Map();
+  const put = (x, y, z, c) => vox.set(`${x},${y},${z}`, c);
+  const box = (x, y, z, w, h, d, c) => {
+    for (let i = 0; i < w; i++) for (let j = 0; j < h; j++) for (let k = 0; k < d; k++) put(x + i, y + j, z + k, typeof c === "function" ? c(i, j, k) : c);
+  };
+  const hash = (x, z) => { let h = (x * 374761393 + z * 668265263) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
+  const vnoise = (x, z) => {
+    const xi = Math.floor(x), zi = Math.floor(z), xf = x - xi, zf = z - zi, s = (t) => t * t * (3 - 2 * t);
+    const a = hash(xi, zi), b = hash(xi + 1, zi), c = hash(xi, zi + 1), d = hash(xi + 1, zi + 1), u = s(xf), v = s(zf);
+    return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+  };
+  // Flat ground where landmarks stand; the hero hill is raised for the avatar.
+  const FLAT = [
+    { x: 0, z: 0, r: 2.5, h: 6 }, { x: 18, z: -7, r: 8.5, h: 2 }, { x: -6, z: -16, r: 6.5, h: 2 },
+    { x: -17, z: 3, r: 6, h: 2 }, { x: 9, z: 16, r: 6.5, h: 2 }, { x: -11, z: 15, r: 5, h: 2 }, { x: 19, z: 12, r: 2.5, h: 2 },
+  ];
+  const inZone = (x, z, pad = 0) => FLAT.some((f) => Math.hypot(x - f.x, z - f.z) < f.r + pad);
+  const heightAt = (x, z) => {
+    const d = Math.hypot(x * 0.95, z * 1.05) / 27;
+    let h = (1 - Math.pow(d, 2.2)) * 4.2 + (vnoise(x / 6 + 9, z / 6 + 3) - 0.5) * 3 + (vnoise(x / 2.5, z / 2.5) - 0.5);
+    for (const f of FLAT) {
+      const k = Math.hypot(x - f.x, z - f.z);
+      if (k < f.r) h = f.h;
+      else if (k < f.r + 3) { const t = (k - f.r) / 3; h = f.h * (1 - t) + h * t; }
+    }
+    return Math.round(h);
+  };
+  const N = 31;
+  const H = new Map();
+  for (let x = -N; x <= N; x++) for (let z = -N; z <= N; z++) {
+    const h = heightAt(x, z);
+    H.set(`${x},${z}`, h);
+    if (h < 1) continue;
+    for (let y = Math.max(1, h - 3); y <= h; y++) {
+      let c;
+      if (y === h) c = h <= 1 ? "#eed9a8" : h === 2 && vnoise(x / 3, z / 3) > 0.62 ? "#e6d39f" : vnoise(x / 4 + 5, z / 4) > 0.55 ? "#8bcb7a" : "#78bb6b";
+      else c = y < h - 1 ? "#a9a49a" : (x + z) % 2 ? "#b98a5e" : "#ad7f55";
+      put(x, y, z, c);
+    }
+  }
+  const ground = (x, z) => H.get(`${x},${z}`) ?? 0;
+
+  // Trees on open grass, never inside a landmark's footprint.
+  for (let x = -N; x <= N; x++) for (let z = -N; z <= N; z++) {
+    const h = ground(x, z);
+    if (h < 3 || inZone(x, z, 2) || hash(x * 3, z * 7) < 0.955) continue;
+    box(x, h + 1, z, 1, 2, 1, "#8a5a3a");
+    box(x - 1, h + 3, z - 1, 3, 2, 3, (i, j, k) => ((i + j + k) % 3 ? "#4f9b5a" : "#5eae63"));
+    put(x, h + 5, z, "#4f9b5a");
+  }
+
+  // ---- landmarks ------------------------------------------------------------
+  // Airport (The Signal): runway, control tower, and a zero baseline under
+  // seven towers built at the real average delays.
+  box(9, 2, -3, 17, 1, 2, "#4a505c");
+  for (let x = 10; x < 25; x += 3) put(x, 2, -3, "#f4f1ea");
+  box(24, 3, -13, 2, 6, 2, "#d9d4ca"); box(23, 9, -14, 4, 2, 4, "#9fd3f0"); put(24, 11, -13, "#d9d4ca");
+  box(10, 2, -10, 15, 1, 1, "#2a2f3a"); // the zero baseline the towers stand on
+
+  // Data district.
+  box(-12, 3, -20, 4, 3, 3, "#f4f1ea"); box(-12, 6, -20, 4, 1, 3, (i) => (i % 2 ? "#e8735a" : "#fbfcff")); // Superstore + awning
+  box(-6, 3, -21, 3, 5, 3, "#d7dde8"); box(-6, 4, -18, 3, 3, 1, (i, j) => (j <= i ? "#3b7dd8" : "#1e2430")); // dashboard screen bars
+  [[-11, -13, "#3b7dd8"], [-12, -11, "#3b7dd8"], [-10, -11, "#3b7dd8"], [-6, -12, "#e8735a"], [-5, -10, "#e8735a"], [-7, -10, "#e8735a"]].forEach(([x, z, roof]) => {
+    put(x, 3, z, "#f4f1ea"); put(x, 4, z, roof); // two clusters: the churn segments
+  });
+  [[-1, -12, 1], [1, -13, 1], [3, -14, 2], [5, -15, 2], [6, -17, 3]].forEach(([x, z, s], i) => {
+    box(x, 3, z, s, 1, 1, ["#e8735a", "#f2c14e", "#3b7dd8", "#7a5af8", "#1a9e84"][i]); // cars along a rising line
+  });
+
+  // The workshop (Built with AI).
+  box(-21, 3, -1, 3, 1, 3, "#d9d4ca"); put(-20, 4, 0, "#78bb6b"); put(-21, 4, 0, "#5db3db"); put(-20, 4, -1, "#eed9a8"); // this site, in miniature
+  box(-14, 3, 6, 3, 2, 3, "#d9d4ca"); // observatory base (the globe is a mesh)
+
+  // Fintech quarter: KPay tower and BCA bank.
+  box(5, 3, 17, 3, 11, 3, (i, j) => (j % 2 ? "#a9cce3" : "#7fa9c9"));
+  box(5, 14, 17, 3, 1, 3, "#2a2f3a");
+  box(10, 3, 13, 5, 4, 4, "#f4f1ea"); box(10, 7, 13, 5, 1, 4, "#1f4e9d"); box(11, 8, 14, 3, 1, 2, "#1f4e9d");
+  for (let i = 0; i < 5; i += 2) box(10 + i, 3, 12, 1, 4, 1, "#fbfcff"); // columns
+
+  // Campus: NUS hall and LSE.
+  box(-15, 3, 16, 4, 3, 3, "#f4f1ea"); box(-15, 6, 16, 4, 1, 3, "#ef7c00"); box(-15, 3, 15, 4, 1, 1, "#1f4e9d");
+  box(-10, 3, 12, 3, 4, 3, "#b5523b"); box(-10, 7, 12, 3, 1, 3, "#7d2b22");
+
+  // The lighthouse pier (contact).
+  box(21, 1, 12, 7, 1, 2, "#a77b52");
+  for (let x = 21; x <= 27; x += 3) put(x, 0, 12, "#6e5038");
+  box(27, 2, 12, 2, 1, 2, "#d9d4ca");
+
+  // Commit the voxels.
+  const mesh = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshLambertMaterial(), vox.size);
+  const m4 = new THREE.Matrix4(), col = new THREE.Color();
+  let n = 0;
+  for (const [k, c] of vox) {
+    const [x, y, z] = k.split(",").map(Number);
+    m4.makeTranslation(x, y, z); mesh.setMatrixAt(n, m4); mesh.setColorAt(n, col.set(c)); n++;
+  }
+  mesh.castShadow = mesh.receiveShadow = true;
+  scene.add(mesh);
+
+  // Water.
+  const water = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshLambertMaterial({ color: "#5db3db", transparent: true, opacity: 0.9 }));
+  water.rotation.x = -Math.PI / 2; water.position.y = 0.7; water.receiveShadow = true;
+  scene.add(water);
+
+  // ---- the seven towers: exact heights, zero baseline -------------------------
+  const UNIT = 0.2; // world units per minute of delay
+  const towerBase = 2.5; // top surface of the baseline row
+  const towers = days.map((d, i) => {
+    const h = d.minutes * UNIT;
+    const t = new THREE.Mesh(new THREE.BoxGeometry(1.4, h, 1.4), new THREE.MeshLambertMaterial({ color: "#ece6da", emissive: "#000000" }));
+    t.position.set(12 + i * 2, towerBase + h / 2, -10);
+    t.castShadow = t.receiveShadow = true;
+    scene.add(t);
+    return t;
+  });
+  // An honest axis post beside them: ticks at 25 and 50 minutes.
+  const axisMat = new THREE.MeshLambertMaterial({ color: "#2a2f3a" });
+  const post = new THREE.Mesh(new THREE.BoxGeometry(0.25, signal.axisMax * UNIT, 0.25), axisMat);
+  post.position.set(10, towerBase + (signal.axisMax * UNIT) / 2, -10); scene.add(post);
+  for (const mm of [signal.axisMax / 2, signal.axisMax]) {
+    const tick = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.12, 0.25), axisMat);
+    tick.position.set(10.3, towerBase + mm * UNIT, -10); scene.add(tick);
+  }
+  const baseCol = new THREE.Color("#ece6da"), coral = new THREE.Color("#e8735a"), teal = new THREE.Color("#1a9e84");
+  onBeat.push((b) => towers.forEach((t, i) => {
+    const isWorst = b === 2 && i === signal.worstIndex, isBest = b === 3 && i === signal.bestIndex;
+    const target = isWorst ? coral : isBest ? teal : baseCol;
+    const dim = (b === 2 || b === 3) && !isWorst && !isBest ? 0.82 : 1;
+    gsap.to(t.material.color, { r: target.r * dim, g: target.g * dim, b: target.b * dim, duration: reduced ? 0 : 0.8, ease: "power2.out" });
+    gsap.to(t.material.emissive, { r: isBest ? 0.05 : 0, g: isBest ? 0.18 : 0, b: isBest ? 0.14 : 0, duration: reduced ? 0 : 0.8 });
+  }));
+
+  // ---- small things that move -------------------------------------------------
+  const lam = (c) => new THREE.MeshLambertMaterial({ color: c });
+  const plane = new THREE.Group();
+  [[new THREE.BoxGeometry(2.2, 0.5, 0.5), "#fbfcff", [0, 0, 0]], [new THREE.BoxGeometry(0.6, 0.12, 2.6), "#fbfcff", [0.1, 0, 0]],
+   [new THREE.BoxGeometry(0.4, 0.7, 0.12), "#e8735a", [-1, 0.35, 0]], [new THREE.BoxGeometry(0.3, 0.3, 0.52), "#5db3db", [0.95, 0.08, 0]]]
+    .forEach(([g, c, p]) => { const mm = new THREE.Mesh(g, lam(c)); mm.position.set(...p); mm.castShadow = true; plane.add(mm); });
+  scene.add(plane);
+
+  // Voxel Jason on the hero hill: dark blazer, white tee, glasses.
+  const me = new THREE.Group();
+  const part = (w, h, d, c, x, y, z, parent = me) => { const mm = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), lam(c)); mm.position.set(x, y, z); mm.castShadow = true; parent.add(mm); return mm; };
+  part(0.32, 0.8, 0.32, "#2b3140", -0.2, 0.4, 0); part(0.32, 0.8, 0.32, "#2b3140", 0.2, 0.4, 0);
+  part(0.9, 0.95, 0.5, "#1f2533", 0, 1.27, 0); part(0.3, 0.7, 0.04, "#fbfcff", 0, 1.35, 0.26);
+  part(0.24, 0.85, 0.26, "#1f2533", -0.58, 1.28, 0); part(0.24, 0.85, 0.26, "#1f2533", 0.58, 1.28, 0);
+  const head = new THREE.Group(); head.position.set(0, 2.05, 0); me.add(head);
+  part(0.66, 0.66, 0.62, "#e6c3a0", 0, 0, 0, head); part(0.7, 0.24, 0.66, "#1b1b1b", 0, 0.32, -0.02, head);
+  part(0.6, 0.08, 0.04, "#2a2f3a", 0, 0.06, 0.33, head); part(0.18, 0.16, 0.04, "#cfe3f2", -0.15, 0.04, 0.33, head); part(0.18, 0.16, 0.04, "#cfe3f2", 0.15, 0.04, 0.33, head);
+  me.position.set(0, 6.5, 0); me.rotation.y = Math.PI / 4;
+  scene.add(me);
+
+  // Observatory globe (Agentic OS), coin stacks (Kaching), fanned cards (Unfold).
+  const globe = new THREE.Mesh(new THREE.IcosahedronGeometry(1.25, 1), new THREE.MeshLambertMaterial({ color: "#c0283b", flatShading: true }));
+  globe.position.set(-13, 6.4, 7); globe.castShadow = true; scene.add(globe);
+  [[-19, 6, 4], [-18, 7, 6], [-20, 7, 3]].forEach(([x, z, count]) => {
+    for (let i = 0; i < count; i++) {
+      const coin = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.25, 8), lam(i % 2 ? "#f2c14e" : "#e0a930"));
+      coin.position.set(x, 2.65 + i * 0.27, z); coin.castShadow = true; scene.add(coin);
+    }
+  });
+  ["#e8735a", "#f2c14e", "#1a9e84", "#7a5af8"].forEach((c, i) => {
+    const card = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.3, 0.14), lam(c));
+    card.position.set(-15 + i * 0.35, 3.8, 0.2); card.rotation.set(0, 0.3, -0.5 + i * 0.32); card.castShadow = true; scene.add(card);
+  });
+
+  // Lighthouse at the end of the pier, its lamp breathing.
+  ["#fbfcff", "#e8735a", "#fbfcff", "#e8735a"].forEach((c, i) => {
+    const seg = new THREE.Mesh(new THREE.CylinderGeometry(0.75 - i * 0.07, 0.8 - i * 0.07, 1.2, 8), lam(c));
+    seg.position.set(28, 3.1 + i * 1.2, 13); seg.castShadow = true; scene.add(seg);
+  });
+  const lamp = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.7, 0.9), new THREE.MeshLambertMaterial({ color: "#fff3c4", emissive: "#ffcf5a", emissiveIntensity: 0.6 }));
+  lamp.position.set(28, 8.1, 13); scene.add(lamp);
+  const cap = new THREE.Mesh(new THREE.ConeGeometry(0.75, 0.8, 8), lam("#2a2f3a")); cap.position.set(28, 8.85, 13); scene.add(cap);
+
+  // Clouds drifting at altitude.
+  const clouds = [];
+  for (let i = 0; i < 6; i++) {
+    const g = new THREE.Group();
+    const size = 2 + (i % 3);
+    for (let j = 0; j < 6; j++) {
+      const c = new THREE.Mesh(new THREE.BoxGeometry(size, 1, size * 0.8), lam("#ffffff"));
+      c.position.set((j % 3) * 1.4 - 1.4, Math.floor(j / 3) * 0.7, (j % 2) * 1.1); g.add(c);
+    }
+    g.position.set(-40 + i * 16, 15 + (i % 3) * 2, -24 + ((i * 13) % 44));
+    scene.add(g); clouds.push(g);
+  }
+
+  // ---- light -------------------------------------------------------------
+  scene.add(new THREE.HemisphereLight("#dbeeff", "#c7b08a", 1.6));
+  const sun = new THREE.DirectionalLight("#fff1da", 2.4);
+  sun.position.set(30, 48, 22); sun.castShadow = true;
+  sun.shadow.mapSize.set(isPhone() ? 1024 : 2048, isPhone() ? 1024 : 2048);
+  Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 40, bottom: -40, near: 1, far: 160 });
+  scene.add(sun);
+
+  // ---- camera ----------------------------------------------------------------
+  const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, -300, 500);
+  const state = { ...WP.hero };
+  function resize() {
+    const w = innerWidth, h = innerHeight, a = w / h;
+    // Render at a small internal width, then upscale with hard pixels.
+    renderer.setPixelRatio(Math.min(1, (w > 900 ? 600 : 260) / w));
+    renderer.setSize(w, h, false);
+    const view = a < 1 ? (34 / Math.max(a, 0.55)) * 0.72 : 34;
+    cam.left = (-view * a) / 2; cam.right = (view * a) / 2; cam.top = view / 2; cam.bottom = -view / 2;
+    // Desktop: the subject sits right of the dialog box. Phone: above it.
+    if (w > 900) cam.setViewOffset(w, h, -w * 0.2, 0, w, h);
+    else cam.setViewOffset(w, h, 0, h * 0.24, w, h);
+    cam.updateProjectionMatrix();
+  }
+  resize();
+  addEventListener("resize", resize);
+
+  // Pointer sway: a few degrees, eased, desktop only.
+  let swayX = 0, swayY = 0, sx = 0, sy = 0;
+  addEventListener("pointermove", (e) => {
+    if (e.pointerType === "touch") return;
+    swayX = (e.clientX / innerWidth - 0.5) * 0.06; swayY = (e.clientY / innerHeight - 0.5) * 0.04;
+  }, { passive: true });
+
+  const tagEl = $("#tag");
+  let current = "hero";
+  const v3 = new THREE.Vector3();
+  const clock = new THREE.Clock();
+  let raf = 0;
+  function frame() {
+    const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
+    const motion = !reduced;
+    sx += (swayX - sx) * 0.05; sy += (swayY - sy) * 0.05;
+    const az = state.az + (motion ? sx + Math.sin(t * 0.12) * 0.015 : 0);
+    const el = state.el + (motion ? sy : 0);
+    const R = 120;
+    cam.position.set(state.tx + R * Math.cos(el) * Math.cos(az), state.ty + R * Math.sin(el), state.tz + R * Math.cos(el) * Math.sin(az));
+    // A touch wider on phones so the tallest tower's top never meets the
+    // screen edge: those heights are the data.
+    cam.zoom = state.zoom * (isPhone() ? 0.85 : 1); cam.updateProjectionMatrix();
+    cam.lookAt(state.tx, state.ty, state.tz);
+
+    if (motion) {
+      const a = t * 0.22;
+      plane.position.set(18 + Math.cos(a) * 10, 10.5 + Math.sin(a * 2) * 0.4, -7 + Math.sin(a) * 6.5);
+      plane.rotation.y = -a - Math.PI / 2;
+      plane.rotation.z = Math.sin(a * 2) * 0.08;
+      me.position.y = 6.5 + Math.abs(Math.sin(t * 1.6)) * 0.04;
+      head.rotation.y = Math.sin(t * 0.5) * 0.35;
+      globe.rotation.y += dt * 0.3;
+      lamp.material.emissiveIntensity = 0.45 + (Math.sin(t * 1.8) + 1) * 0.35;
+      clouds.forEach((c, i) => { c.position.x += dt * (0.5 + (i % 3) * 0.2); if (c.position.x > 48) c.position.x = -48; });
+    }
+    renderer.render(scene, cam);
+
+    // Float the landmark label over the current anchor.
+    const an = ANCHOR[current];
+    v3.set(an[0], an[1], an[2]).project(cam);
+    tagEl.style.transform = `translate(${(v3.x * 0.5 + 0.5) * innerWidth}px, ${(-v3.y * 0.5 + 0.5) * innerHeight}px) translate(-50%, -100%)`;
+    raf = requestAnimationFrame(frame);
+  }
+  frame();
+  requestAnimationFrame(() => canvas.classList.add("on"));
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) cancelAnimationFrame(raf); else { clock.getDelta(); frame(); }
+  });
+
+  // ---- scroll: one long camera glide, scrubbed ---------------------------
+  const lenis = new Lenis({ duration: 1.2, easing: (x) => Math.min(1, 1.001 - Math.pow(2, -10 * x)), smoothWheel: true });
+  lenis.on("scroll", ScrollTrigger.update);
+  gsap.ticker.add((time) => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+  document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener("click", (e) => {
+    const id = a.getAttribute("href");
+    if (id.length < 2) return;
+    e.preventDefault();
+    lenis.scrollTo(id, { duration: reduced ? 0 : 1.6 });
+  }));
+
+  let tl, st;
+  function build() {
+    tl?.kill(); st?.kill();
+    tl = gsap.timeline({ paused: true });
+    for (let i = 1; i < stops.length; i++) {
+      const dist = Math.max(1, stops[i].offsetTop - stops[i - 1].offsetTop);
+      tl.to(state, { ...WP[stops[i].dataset.wp], duration: dist, ease: "power1.inOut" });
+    }
+    st = ScrollTrigger.create({
+      start: () => stops[0].offsetTop, end: () => stops.at(-1).offsetTop,
+      animation: tl, scrub: reduced ? true : 1.2,
+    });
+  }
+  build();
+  addEventListener("load", () => { build(); ScrollTrigger.refresh(); });
+
+  // Which landmark is "here": drives the label, the map, and the Signal beats.
+  stops.forEach((s) => ScrollTrigger.create({
+    trigger: s, start: "top 55%", end: "bottom 55%",
+    onToggle: (self) => {
+      if (!self.isActive) return;
+      current = s.dataset.wp;
+      tagEl.textContent = s.dataset.label;
+      tagEl.classList.add("on");
+      document.querySelectorAll("#map a").forEach((a) => a.setAttribute("aria-current", String(a.getAttribute("href") === `#${s.id}`)));
+      if (s.id === "signal") playBeats();
+    },
+  }));
+
+  $("#motion").addEventListener("click", (e) => {
+    reduced = !reduced;
+    document.documentElement.classList.toggle("reduced", reduced);
+    build(); ScrollTrigger.refresh();
+    if (reduced && beat !== 3) { clearInterval(beatTimer); setBeat(3); }
+    e.currentTarget.textContent = reduced ? "Enable motion" : "Reduce motion";
+  });
+}
+
+// Panels rise into place as their landmark arrives: one restrained move.
+document.querySelectorAll(".frame").forEach((f, i) => {
+  if (i === 0) {
+    gsap.from(f, { opacity: 0, y: 28, duration: 1.1, delay: 0.3, ease: "power3.out" });
+    return;
+  }
+  gsap.from(f, {
+    opacity: 0, y: 40, duration: 0.9, ease: "power3.out",
+    scrollTrigger: { trigger: f, start: "top 85%", toggleActions: "play none none none" },
+  });
+});
+if (!renderer) {
+  // Without WebGL there are no landmark triggers; start the Signal beats on view.
+  ScrollTrigger.create({ trigger: "#signal", start: "top 60%", once: true, onEnter: playBeats });
+}
+</script>
+</body>
+</html>

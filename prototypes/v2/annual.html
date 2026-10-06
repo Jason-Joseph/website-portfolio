@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>JJT · Annual 2026 — v2 mockup C: The Annual</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --sheet: #f5f4f6;         /* uncoated near-white stock */
+    --sheet-warm: #faf6f5;
+    --sheet-green: #eef3ef;
+    --ink: #16181a;           /* never pure black */
+    --seal: #dcddf3;          /* the one periwinkle stamp */
+    --seal-ink: #3d3f8f;
+    --hair: #c9c7c4;
+    --muted: #5e6166;
+    --grot: "Host Grotesk", system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, monospace;
+    --ease: cubic-bezier(.19, 1, .22, 1);
+    --gutter: clamp(1rem, 3.2vw, 40px);
+    --bar-h: 72px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    color: var(--ink); font-family: var(--grot); font-weight: 400; font-size: 17px; line-height: 1.55;
+    overflow-x: clip;
+    /* The sheet drifts warm at one corner and green at another, so the ink
+       reads as printed rather than rendered. */
+    background-color: var(--sheet);
+    background-image:
+      radial-gradient(60vw 50vh at 0% 0%, var(--sheet-warm), transparent 70%),
+      radial-gradient(60vw 60vh at 100% 100%, var(--sheet-green), transparent 70%);
+    background-attachment: fixed;
+  }
+  ::selection { background: var(--seal); color: var(--ink); }
+  a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  img { display: block; max-width: 100%; }
+  :focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
+
+  .label { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 0 var(--gutter); }
+  .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 40px; }
+
+  /* --- sticky bar of mono tokens ----------------------------------------- */
+  .bar {
+    position: sticky; top: 0; z-index: 30; height: calc(var(--bar-h) + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+    background: color-mix(in srgb, var(--sheet) 92%, transparent);
+    backdrop-filter: saturate(1.2) blur(6px);
+    border-bottom: 1px solid var(--hair);
+  }
+  .bar .wrap { height: var(--bar-h); display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+  .tokens { display: flex; align-items: center; gap: .25rem; overflow-x: auto; scrollbar-width: none; }
+  .tokens a, .tokens span {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none;
+    padding: .55rem .7rem; white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center;
+    transition: background-color .1s ease, color .1s ease;
+  }
+  .tokens a:hover { background: var(--ink); color: var(--sheet); }
+  .mark { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; display: inline-flex; align-items: center; gap: .6rem; min-height: 44px; white-space: nowrap; }
+  .mark b { font-family: var(--grot); font-weight: 500; font-size: 20px; letter-spacing: -.02em; text-transform: none; }
+
+  /* --- buttons: 0-radius rects, mono caps ------------------------------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: .7rem; min-height: 48px; padding: 0 1.4rem;
+    font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; text-decoration: none;
+    border: 1px solid var(--ink); border-radius: 0; background: transparent; color: var(--ink); cursor: pointer;
+    transition: background-color .1s ease, color .1s ease;
+  }
+  .btn:hover { background: var(--ink); color: var(--sheet); }
+  .btn.primary { background: var(--ink); color: var(--sheet); }
+  .btn.primary:hover { background: var(--seal); color: var(--ink); }
+  .circle {
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--ink); background: transparent; color: var(--ink);
+    display: inline-grid; place-items: center; cursor: pointer; font: inherit; transition: background-color .1s ease, color .1s ease;
+  }
+  .circle:hover:not(:disabled) { background: var(--ink); color: var(--sheet); }
+  .circle:disabled { opacity: .3; cursor: default; }
+
+  /* --- registration furniture --------------------------------------------- */
+  .plate { position: relative; }
+  .reg { position: absolute; inset: -10px; pointer-events: none; z-index: 2; }
+  .reg i { position: absolute; width: 19px; height: 19px;
+    background: linear-gradient(var(--ink), var(--ink)) center / 1px 100% no-repeat, linear-gradient(var(--ink), var(--ink)) center / 100% 1px no-repeat; }
+  .reg i::after { content: ""; position: absolute; inset: 5px; border: 1px solid var(--ink); border-radius: 50%; }
+  .reg i:nth-child(1) { left: -9px; top: -9px; } .reg i:nth-child(2) { right: -9px; top: -9px; }
+  .reg i:nth-child(3) { left: -9px; bottom: -9px; } .reg i:nth-child(4) { right: -9px; bottom: -9px; }
+  .plate-img { border: 1px solid var(--hair); background: #fff; overflow: hidden; }
+  .plate-img img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+  /* The stamp: a human signed it. Text ring turns 25s; lifts 4px on hover. */
+  .stamp {
+    position: absolute; width: clamp(110px, 12vw, 148px); aspect-ratio: 1; z-index: 3;
+    transition: transform .6s var(--ease);
+  }
+  .stamp:hover { transform: translateY(-4px); }
+  .stamp-disc { position: absolute; inset: 0; border-radius: 50%; background: var(--seal); box-shadow: 0 1px 0 rgba(22,24,26,.12), 0 10px 24px -14px rgba(22,24,26,.5); }
+  .stamp svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .stamp .ring { transform-origin: 50px 50px; animation: turn 25s linear infinite; }
+  .stamp text { font-family: var(--mono); font-size: 8.6px; letter-spacing: .2em; text-transform: uppercase; fill: var(--seal-ink); }
+  @keyframes turn { to { transform: rotate(360deg); } }
+
+  /* 8px dot matrix in the voids; dots near the pointer darken. */
+  .void { position: relative; }
+  .void canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* --- hero -------------------------------------------------------------- */
+  .hero { padding: clamp(2.5rem, 7vh, 5rem) 0 clamp(2.5rem, 6vh, 4rem); align-items: end; }
+  .hero-copy { grid-column: 1 / span 7; }
+  h1 { font-weight: 400; font-size: clamp(2.7rem, 6.4vw, 92px); line-height: .98; letter-spacing: -.02em; text-wrap: balance; }
+  .tagline { font-size: 17px; max-width: 34rem; margin-top: 1.8rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 2rem; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: .6rem 1.6rem; margin-top: 2.2rem; color: var(--muted); }
+  .hero-plate { grid-column: 9 / span 4; }
+  .hero-plate .plate-img { aspect-ratio: 4 / 5; }
+  .hero-plate .plate-img img { object-position: center 18%; }
+  .hero-plate .stamp { left: -18%; bottom: 8%; }
+  .plate-caption { display: flex; justify-content: space-between; margin-top: .9rem; color: var(--muted); }
+
+  /* 4-up row split by hairlines. */
+  .four { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+  .four > * { padding: 1.4rem 1.2rem 1.5rem; border-left: 1px solid var(--hair); }
+  .four > *:first-child { border-left: 0; padding-left: 0; }
+  .four strong { display: block; font-weight: 400; font-size: clamp(1.9rem, 3.4vw, 3rem); letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .four span.label { display: block; margin-top: .7rem; color: var(--muted); letter-spacing: .1em; line-height: 1.5; }
+
+  /* --- sections ------------------------------------------------------------ */
+  section { padding: clamp(4rem, 11vh, 7.5rem) 0 0; scroll-margin-top: calc(var(--bar-h) + 1rem); }
+  h2 { font-weight: 400; font-size: clamp(2.2rem, 5vw, 72px); line-height: 1; letter-spacing: -.02em; text-wrap: balance; }
+  .sec-head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 40px; align-items: end; margin-bottom: clamp(2rem, 5vh, 3.4rem); }
+  .sec-head h2 { grid-column: 1 / span 8; }
+  .sec-head .label { grid-column: 10 / span 3; justify-self: end; color: var(--muted); text-align: right; }
+
+  /* The Signal plate. */
+  .signal-plate { border: 1px solid var(--hair); background: rgba(255,255,255,.45); padding: clamp(1.2rem, 3vw, 2.6rem); }
+  .signal-top { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 40px; align-items: start; }
+  .beat-cap { grid-column: 1 / span 7; font-size: clamp(1.6rem, 3.2vw, 2.8rem); line-height: 1.05; letter-spacing: -.02em; min-height: 2.2em; }
+  .beat-cap u { text-decoration: none; background: var(--seal); padding: 0 .15em; }
+  .readout { grid-column: 9 / span 4; justify-self: end; text-align: right; }
+  .readout strong { display: block; font-weight: 400; font-size: clamp(2.2rem, 5vw, 4.4rem); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .readout .label { color: var(--muted); display: block; margin-top: .5rem; }
+  .chart { position: relative; margin-top: clamp(2rem, 5vh, 3rem); height: clamp(220px, 32vh, 320px); display: grid; grid-template-columns: 2.4rem 1fr; column-gap: 1rem; }
+  .yaxis { display: flex; flex-direction: column; justify-content: space-between; text-align: right; color: var(--muted); padding-bottom: 1.9rem; }
+  .plot { position: relative; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); column-gap: clamp(.4rem, 2vw, 1.6rem); align-items: end; border-bottom: 1px solid var(--ink); margin-bottom: 1.9rem; }
+  .plot::before, .plot::after { content: ""; position: absolute; left: 0; right: 0; border-top: 1px solid var(--hair); }
+  .plot::before { top: 0; } .plot::after { top: 50%; }
+  .col { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; z-index: 1; }
+  .col .bar-v { font-family: var(--mono); font-size: 11px; margin-bottom: .4rem; opacity: 0; transition: opacity .5s var(--ease); font-variant-numeric: tabular-nums; }
+  .col .fill { width: 100%; height: 0; border: 1px solid var(--ink); border-bottom: 0; background: transparent; transition: height 1s var(--ease), background-color .3s ease; }
+  .col .day { position: absolute; bottom: -1.7rem; font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; }
+  .chart[data-beat="1"] .bar-v, .chart[data-beat="2"] .bar-v, .chart[data-beat="3"] .bar-v { opacity: 1; }
+  .chart[data-beat="2"] .col.worst .fill { background: var(--ink); }
+  .chart[data-beat="3"] .col.best .fill { background: var(--seal); border-color: var(--seal-ink); }
+  .chart[data-beat="3"] .col.best .day { color: var(--seal-ink); }
+  .signal-foot { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: .4rem; }
+  .signal-nav { display: flex; align-items: center; gap: .6rem; }
+  .signal-nav .label { color: var(--muted); min-width: 3.2rem; text-align: center; }
+
+  /* Credits row: hairlines split the facts under every plate. */
+  .credits { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); border-top: 1px solid var(--hair); margin-top: 1.4rem; }
+  .credits > div { padding: .8rem .9rem .2rem; border-left: 1px solid var(--hair); min-width: 0; }
+  .credits > div:first-child { border-left: 0; padding-left: 0; }
+  .credits .label { color: var(--muted); display: block; margin-bottom: .3rem; }
+  .credits p, .credits a { font-size: 15px; overflow-wrap: anywhere; }
+
+  /* Work plates step in one column at a time. */
+  .plates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; row-gap: clamp(3rem, 7vh, 5rem); }
+  .work-plate .plate-img { aspect-ratio: 16 / 10; }
+  .work-plate h3 { font-weight: 400; font-size: clamp(1.45rem, 2.2vw, 2rem); line-height: 1.12; letter-spacing: -.015em; margin-top: 1.3rem; }
+  .work-plate p.desc { margin-top: .7rem; max-width: 60ch; }
+  .plate-no { position: absolute; left: .8rem; top: .7rem; z-index: 2; background: var(--sheet); padding: .25rem .5rem; }
+  .mini-stamp { position: absolute; right: 1rem; top: 1rem; z-index: 2; background: var(--seal); color: var(--seal-ink); border-radius: 999px; padding: .4rem .7rem; }
+  .art-dots { width: 100%; height: 100%; display: block; background: #fff; }
+  .step-in { opacity: 0; transform: translateY(18px); }
+  .stepped { opacity: 1; transform: none; transition: opacity .6s var(--ease), transform .6s var(--ease); }
+
+  /* Experience as a hairline table on the 12-col grid. */
+  .xp { border-top: 1px solid var(--ink); }
+  .xp-row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 40px; padding: clamp(1.6rem, 4vh, 2.4rem) 0; border-bottom: 1px solid var(--hair); }
+  .xp-when { grid-column: 1 / span 3; color: var(--muted); display: grid; gap: .3rem; align-content: start; }
+  .xp-when img { height: 30px; width: auto; margin-bottom: .7rem; }
+  .xp-what { grid-column: 4 / span 4; }
+  .xp-what h3 { font-weight: 400; font-size: clamp(1.4rem, 2.2vw, 1.9rem); line-height: 1.1; letter-spacing: -.015em; }
+  .xp-what p { margin-top: .5rem; color: var(--muted); }
+  .xp-bullets { grid-column: 8 / span 5; list-style: none; padding: 0; display: grid; gap: .8rem; }
+  .xp-bullets li { padding-left: 1.2rem; position: relative; font-size: 16px; }
+  .xp-bullets li::before { content: ""; position: absolute; left: 0; top: .72em; width: 7px; height: 1px; background: var(--ink); }
+
+  .about-lead { grid-column: 1 / span 8; font-size: clamp(1.9rem, 3.8vw, 3.4rem); line-height: 1.08; letter-spacing: -.02em; }
+  .about-body { grid-column: 1 / span 6; margin-top: 1.8rem; }
+  .skills { grid-column: 1 / -1; margin-top: clamp(2.5rem, 6vh, 4rem); --cols: 4; }
+
+  .contact { padding-bottom: clamp(4rem, 10vh, 6rem); }
+  .contact-mail { display: inline-block; font-size: clamp(1.9rem, 6.6vw, 92px); line-height: 1.05; letter-spacing: -.02em; text-decoration: none; overflow-wrap: anywhere; border-bottom: 1px solid var(--ink); padding-bottom: .2rem; transition: color .1s ease; }
+  .contact-mail:hover { color: var(--seal-ink); }
+  footer { border-top: 1px solid var(--hair); padding: 1.4rem 0 max(1.4rem, env(safe-area-inset-bottom)); }
+  footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; align-items: center; color: var(--muted); }
+  footer button { font: inherit; color: inherit; letter-spacing: inherit; text-transform: inherit; background: none; border: 0; cursor: pointer; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (max-width: 1000px) {
+    .grid, .sec-head, .signal-top, .xp-row { column-gap: 24px; }
+    .hero-copy { grid-column: 1 / -1; }
+    .hero-plate { grid-column: 3 / span 8; margin-top: 3rem; }
+    .xp-when { grid-column: 1 / -1; }
+    .xp-what { grid-column: 1 / span 5; margin-top: 1rem; }
+    .xp-bullets { grid-column: 6 / span 7; margin-top: 1rem; }
+  }
+  @media (max-width: 720px) {
+    .grid, .sec-head, .signal-top, .xp-row { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+    .hero-plate { grid-column: 1; margin-top: 2.6rem; max-width: 20rem; margin-left: 3.4rem; }
+    .hero-plate .stamp { left: -3.4rem; bottom: 4%; width: 104px; }
+    .sec-head h2, .sec-head .label { grid-column: 1; }
+    .sec-head .label { justify-self: start; text-align: left; margin-top: .8rem; }
+    .beat-cap, .readout { grid-column: 1; }
+    .readout { justify-self: start; text-align: left; margin-top: 1rem; }
+    .four { grid-template-columns: 1fr 1fr; }
+    .four > *:nth-child(3) { border-left: 0; padding-left: 0; border-top: 1px solid var(--hair); }
+    .four > *:nth-child(4) { border-top: 1px solid var(--hair); }
+    .plates { grid-template-columns: minmax(0, 1fr); }
+    .credits { --cols: 2 !important; }
+    .credits > div:nth-child(3) { border-left: 0; padding-left: 0; }
+    .xp-what, .xp-bullets, .about-lead, .about-body { grid-column: 1; }
+    /* Five tokens overflow a phone and push Contact, the one a recruiter
+       needs, off-screen. Signal and About sit right under the hero anyway. */
+    .bar .tokens span, .tokens a[href="#signal"], .tokens a[href="#about"] { display: none; }
+    /* Crosshairs sit 19px outside each plate; the phone gutter is 16px.
+       Pull them in so they register inside the sheet instead of widening it. */
+    .reg { inset: -6px; }
+    .mark { font-size: 0; gap: 0; }
+    .mark b { font-size: 20px; }
+    .signal-foot { flex-direction: column; align-items: flex-start; }
+  }
+  /* Motion is on by default and only the footer toggle reduces it. Jason's
+     own Windows machine reports prefers-reduced-motion, which flattened the
+     live site twice when it was honored as the default. */
+  .reduced *, .reduced *::before, .reduced *::after { transition-duration: .01ms !important; animation: none !important; }
+</style>
+</head>
+<body>
+<!--
+THESIS: The portfolio is a design annual's plate section: each project a registered plate with a credits row, signed by one periwinkle stamp. It refuses the dark dev hero and the cream editorial page.
+OWN-WORLD: Uncoated near-white sheet drifting warm and green; #16181A ink; 1px #C9C7C4 hairlines; registration crosshairs; 8px dot matrix in voids; one periwinkle seal; Host Grotesk 400 at 92px with Geist Mono 11px labels; 0-radius buttons.
+STORY: A recruiter reads the 92px line and the 4-up stat row in seconds; a data lead reads each plate's credits and opens the source.
+FIRST VIEWPORT: Display headline over 7 columns, portrait plate in columns 9 to 12 with the stamp half off it; Email me as the filled black rect; 4-up hairline stat row beneath.
+FORM: design annual plate section, catalog challenger (competitive); seed bab1784c.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+-->
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#top"><b>JJT</b> Annual 2026</a>
+    <nav class="tokens" aria-label="Primary">
+      <a href="#signal">Signal</a><a href="#work">Work</a><a href="#experience">Experience</a><a href="#about">About</a><a href="#contact">Contact</a>
+      <span aria-hidden="true">· Singapore</span>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <section class="grid hero" aria-labelledby="h1">
+      <div class="hero-copy">
+        <h1 id="h1">Numbers made legible. Decisions made easier.</h1>
+        <p class="tagline" data-f="tagline"></p>
+        <div class="actions">
+          <a class="btn primary" data-f="mail">Email me <span aria-hidden="true">→</span></a>
+          <a class="btn" href="/Jason-Joseph-Tjiadi-CV.pdf" download>Download CV</a>
+          <a class="btn" data-f="linkedin" target="_blank" rel="noreferrer">LinkedIn ↗</a>
+        </div>
+        <div class="hero-meta label"><span data-f="name"></span><span data-f="title"></span><span>NUS · LSE</span></div>
+      </div>
+      <figure class="hero-plate">
+        <div class="plate">
+          <div class="reg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          <div class="plate-img"><img data-f="portrait" alt="" /></div>
+          <div class="stamp" aria-hidden="true">
+            <div class="stamp-disc"></div>
+            <svg viewBox="0 0 100 100">
+              <defs><path id="ring" d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0" /></defs>
+              <g class="ring"><text><textPath href="#ring" startOffset="0">JJT · Verified data · Singapore · 2026 ·</textPath></text></g>
+              <path d="M38 51 l8 8 l16 -18" fill="none" stroke="#3d3f8f" stroke-width="2.4" stroke-linecap="square" />
+            </svg>
+          </div>
+        </div>
+        <figcaption class="plate-caption label"><span>Plate 00</span><span data-f="loc"></span></figcaption>
+      </figure>
+    </section>
+
+    <div class="four" id="four" aria-label="Key figures"></div>
+
+    <section id="signal" aria-labelledby="sig-h">
+      <div class="sec-head"><h2 id="sig-h">Airline Flight Delay Analysis</h2><span class="label">Plate 01 · featured analysis · 2002–2003</span></div>
+      <div class="plate">
+        <div class="reg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="signal-plate">
+          <div class="signal-top">
+            <p class="beat-cap" id="beat-cap" aria-live="polite"></p>
+            <div class="readout"><strong id="readout"></strong><span class="label" id="readout-l"></span></div>
+          </div>
+          <div class="chart" id="chart" data-beat="0" aria-hidden="true">
+            <div class="yaxis label"><span id="ymax"></span><span id="ymid"></span><span>0</span></div>
+            <div class="plot" id="plot"></div>
+          </div>
+          <div class="signal-foot">
+            <div class="signal-nav">
+              <button class="circle" id="prev" type="button" aria-label="Previous step">←</button>
+              <span class="label" id="step-l">1 / 4</span>
+              <button class="circle" id="next" type="button" aria-label="Next step">→</button>
+            </div>
+            <a class="btn" id="notebook" target="_blank" rel="noreferrer">See the notebook ↗</a>
+          </div>
+          <div class="credits" style="--cols:4">
+            <div><span class="label">Method</span><p id="method"></p></div>
+            <div><span class="label">Rows</span><p id="rows"></p></div>
+            <div><span class="label">Tools</span><p>Python, pandas</p></div>
+            <div><span class="label">Baseline</span><p>Zero. Never truncated.</p></div>
+          </div>
+        </div>
+      </div>
+      <!-- The WRAPPER is visually hidden, never the table itself. -->
+      <div style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)"><table id="sr-table"></table></div>
+    </section>
+
+    <section id="work" aria-labelledby="work-h">
+      <div class="sec-head"><h2 id="work-h">Data work</h2><span class="label" id="work-n"></span></div>
+      <div class="plates" id="data-plates"></div>
+    </section>
+
+    <div class="void" aria-hidden="true" style="margin-top:4rem;height:120px"><canvas></canvas></div>
+
+    <section id="built" aria-labelledby="ai-h" style="padding-top:2rem">
+      <div class="sec-head"><h2 id="ai-h">Built with AI</h2><span class="label" id="ai-n"></span></div>
+      <div class="plates" id="ai-plates"></div>
+      <div class="actions" style="margin-top:3rem"><a class="btn" href="https://github.com/Jason-Joseph/Projects" target="_blank" rel="noreferrer">More on GitHub ↗</a></div>
+    </section>
+
+    <section id="experience" aria-labelledby="xp-h">
+      <div class="sec-head"><h2 id="xp-h">Experience</h2><span class="label">Fintech and banking · SG and ID</span></div>
+      <div class="xp" id="xp"></div>
+      <div class="sec-head" style="margin-top:clamp(3rem,8vh,5rem)"><h2 style="font-size:clamp(1.8rem,3.6vw,52px)">Education</h2><span class="label">Two degrees</span></div>
+      <div class="xp" id="edu"></div>
+    </section>
+
+    <section id="about" aria-labelledby="about-h">
+      <div class="grid">
+        <h2 id="about-h" class="about-lead" data-f="lead"></h2>
+        <p class="about-body" data-f="body"></p>
+        <div class="credits skills" id="skills"></div>
+      </div>
+    </section>
+
+    <div class="void" aria-hidden="true" style="margin-top:4rem;height:140px"><canvas></canvas></div>
+
+    <section id="contact" class="contact" aria-labelledby="c-h" style="padding-top:2rem">
+      <div class="sec-head"><h2 id="c-h">Have data worth a closer look?</h2><span class="label" data-f="loc2"></span></div>
+      <a class="contact-mail" data-f="mail-big"></a>
+      <p style="margin-top:1.6rem;max-width:40rem" data-f="availability"></p>
+      <div class="actions"><a class="btn primary" data-f="mail2">Email me →</a><a class="btn" href="/Jason-Joseph-Tjiadi-CV.pdf" download>Download CV</a></div>
+      <div class="credits" style="--cols:4;margin-top:3rem" id="rail"></div>
+    </section>
+  </div>
+</main>
+<footer>
+  <div class="wrap label">
+    <span>Set in Host Grotesk and Geist Mono · v2 mockup C</span>
+    <button type="button" id="motion">Reduce motion</button>
+    <a href="#top" style="text-decoration:none;min-height:44px;display:inline-flex;align-items:center">Back to top ↑</a>
+  </div>
+</footer>
+
+<script type="module">
+import content from "/src/content.ts";
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const { profile, about, stats, signal, experience, education, skills, projects, contact } = content;
+let reduced = false; // default-on motion; see the note above .reduced in the CSS
+
+// ---- copy ----------------------------------------------------------------------
+$('[data-f="tagline"]').textContent = profile.tagline;
+$('[data-f="name"]').textContent = profile.name;
+$('[data-f="title"]').textContent = profile.title;
+$('[data-f="loc"]').textContent = contact.location;
+$('[data-f="loc2"]').textContent = contact.location;
+for (const k of ["mail", "mail2"]) $(`[data-f="${k}"]`).href = `mailto:${contact.email}`;
+const big = $('[data-f="mail-big"]'); big.href = `mailto:${contact.email}`; big.textContent = contact.email;
+$('[data-f="linkedin"]').href = contact.linkedin;
+$('[data-f="lead"]').textContent = about.lead;
+$('[data-f="body"]').textContent = about.body;
+$('[data-f="availability"]').textContent = contact.availability;
+const portrait = $('[data-f="portrait"]'); portrait.src = profile.photoPath; portrait.alt = `Portrait of ${profile.name}`;
+
+$("#four").innerHTML = stats.map((s) => `<div><strong>${esc(s.value)}</strong><span class="label">${esc(s.label)}</span></div>`).join("");
+
+// ---- plates ---------------------------------------------------------------------
+const reg = '<div class="reg" aria-hidden="true"><i></i><i></i><i></i><i></i></div>';
+function plate(p) {
+  const ext = p.link.startsWith("http");
+  const go = p.link.startsWith("mailto:") ? "Ask for a demo" : p.link === "#top" ? "You're on it" : /\.(ipynb|R)$/.test(p.link) ? "Open the code" : p.link.endsWith(".pdf") ? "Open the dashboard" : "Open it";
+  const kind = p.tags.includes("Clustering") ? "cluster" : "regress";
+  const art = p.image
+    ? `<img src="${esc(p.image)}" alt="${esc(p.imageAlt ?? p.title)}" loading="lazy" />`
+    : `<canvas class="art-dots" data-kind="${kind}" role="img" aria-label="${esc(p.title)}, illustrated with a dot-matrix ${kind === "cluster" ? "cluster" : "regression"} figure"></canvas>`;
+  return `
+  <article class="work-plate step-in">
+    <div class="plate">
+      ${reg}
+      <span class="plate-no label">Plate ${esc(p.index)}</span>
+      ${p.badge ? `<span class="mini-stamp label">${esc(p.badge)}</span>` : ""}
+      <div class="plate-img" style="aspect-ratio:16/10">${art}</div>
+    </div>
+    <h3>${esc(p.title)}</h3>
+    <p class="desc">${esc(p.description)}</p>
+    <div class="credits" style="--cols:3">
+      <div><span class="label">Plate</span><p>${esc(p.index)} / ${String(projects.length).padStart(2, "0")}</p></div>
+      <div><span class="label">Tools</span><p>${p.tags.map(esc).join(", ")}</p></div>
+      <div><span class="label">Source</span><a href="${esc(p.link)}" ${ext ? 'target="_blank" rel="noreferrer"' : ""} style="display:inline-flex;min-height:44px;align-items:flex-start">${go} ${ext ? "↗" : "→"}</a></div>
+    </div>
+  </article>`;
+}
+const dataP = projects.filter((p) => p.kind === "data" && !p.story);
+const aiP = projects.filter((p) => p.kind === "ai");
+$("#data-plates").innerHTML = dataP.map(plate).join("");
+$("#ai-plates").innerHTML = aiP.map(plate).join("");
+$("#work-n").textContent = `${dataP.length} analyses`;
+$("#ai-n").textContent = `${aiP.length} things shipped with Claude Code`;
+
+$("#xp").innerHTML = experience.map((x) => `
+  <div class="xp-row">
+    <div class="xp-when label"><img src="${esc(x.logo)}" alt="${esc(x.company)} logo" /><span>${esc(x.dates)}</span><span>${esc(x.location)}</span></div>
+    <div class="xp-what"><h3>${esc(x.company)}</h3><p>${esc(x.role)}</p></div>
+    <ul class="xp-bullets">${x.highlights.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>
+  </div>`).join("");
+$("#edu").innerHTML = education.map((e) => `
+  <div class="xp-row">
+    <div class="xp-when label"><img src="${esc(e.logo)}" alt="${esc(e.institution)} logo" /><span>${esc(e.dates)}</span></div>
+    <div class="xp-what"><h3>${esc(e.institution)}</h3><p>${esc(e.degree)}</p></div>
+    <ul class="xp-bullets"><li>${esc(e.details)}</li></ul>
+  </div>`).join("");
+$("#skills").innerHTML = skills.map((s) => `<div><span class="label">${esc(s.category)}</span><p>${s.items.map(esc).join(", ")}</p></div>`).join("");
+$("#rail").innerHTML = [
+  ["Phone", `<a href="tel:${esc(contact.phone.replace(/\s/g, ""))}">${esc(contact.phone)}</a>`],
+  ["LinkedIn", `<a href="${esc(contact.linkedin)}" target="_blank" rel="noreferrer">in/jasontjiadi ↗</a>`],
+  ["GitHub", `<a href="${esc(contact.github)}" target="_blank" rel="noreferrer">Jason-Joseph ↗</a>`],
+  ["Location", `<p>${esc(contact.location)}</p>`],
+].map(([k, v]) => `<div><span class="label">${k}</span>${v}</div>`).join("");
+
+// ---- the signal plate -------------------------------------------------------------
+const dayName = { Mon: "Monday", Tue: "Tuesday", Wed: "Wednesday", Thu: "Thursday", Fri: "Friday", Sat: "Saturday", Sun: "Sunday" };
+const days = signal.days, worst = days[signal.worstIndex], best = days[signal.bestIndex];
+$("#ymax").textContent = String(signal.axisMax);
+$("#ymid").textContent = String(signal.axisMax / 2);
+$("#plot").innerHTML = days.map((d, i) => `
+  <div class="col ${i === signal.worstIndex ? "worst" : ""} ${i === signal.bestIndex ? "best" : ""}">
+    <span class="bar-v">${d.minutes.toFixed(1)}</span>
+    <div class="fill" data-h="${(d.minutes / signal.axisMax) * 100}"></div>
+    <span class="day">${d.day}</span>
+  </div>`).join("");
+$("#method").textContent = signal.method;
+$("#rows").textContent = `${signal.totalFlights.toLocaleString("en-US")} US domestic flights`;
+$("#notebook").href = signal.notebook;
+$("#sr-table").innerHTML = `<caption>Average total flight delay by day of week, from ${signal.totalFlights.toLocaleString("en-US")} US domestic flights, 2002 to 2003</caption><tbody>${days.map((d) => `<tr><th scope="row">${d.day}</th><td>${d.minutes.toFixed(1)} minutes</td></tr>`).join("")}</tbody>`;
+
+const beats = [
+  { cap: "Two years of US domestic aviation.", v: signal.totalFlights.toLocaleString("en-US"), l: "flights" },
+  { cap: "Average total delay, by day of week.", v: `0–${signal.axisMax}`, l: "minutes · zero baseline" },
+  { cap: `${dayName[worst.day]} is the worst day to fly.`, v: worst.minutes.toFixed(1), l: `minutes on ${dayName[worst.day]}` },
+  { cap: `${dayName[best.day]} is calmest. <u>By six minutes.</u> The day barely matters. That's the finding.`, v: best.minutes.toFixed(1), l: `minutes on ${dayName[best.day]}` },
+];
+let beat = 0;
+function setBeat(n) {
+  beat = Math.max(0, Math.min(3, n));
+  $("#beat-cap").innerHTML = beats[beat].cap;
+  $("#readout").textContent = beats[beat].v;
+  $("#readout-l").textContent = beats[beat].l;
+  $("#chart").dataset.beat = String(beat);
+  document.querySelectorAll(".fill").forEach((f) => { f.style.height = beat >= 1 ? `${f.dataset.h}%` : "0"; });
+  $("#step-l").textContent = `${beat + 1} / 4`;
+  $("#prev").disabled = beat === 0;
+  $("#next").disabled = beat === 3;
+}
+setBeat(reduced ? 3 : 0);
+let auto = null;
+const stop = () => { clearInterval(auto); auto = null; };
+$("#prev").addEventListener("click", () => { stop(); setBeat(beat - 1); });
+$("#next").addEventListener("click", () => { stop(); setBeat(beat + 1); });
+new IntersectionObserver(([en], obs) => {
+  if (!en.isIntersecting) return;
+  obs.disconnect();
+  if (reduced) return;
+  auto = setInterval(() => (beat >= 3 ? stop() : setBeat(beat + 1)), 2600);
+}, { threshold: 0.4 }).observe($("#signal .signal-plate"));
+
+// ---- plates step in, one column at a time -------------------------------------
+const stepIO = new IntersectionObserver((entries) => entries.forEach((en) => {
+  if (!en.isIntersecting) return;
+  stepIO.unobserve(en.target);
+  const col = [...en.target.parentNode.children].indexOf(en.target) % 2;
+  en.target.style.transitionDelay = reduced ? "0s" : `${col * 0.12}s`;
+  en.target.classList.add("stepped");
+}), { threshold: 0.12 });
+document.querySelectorAll(".step-in").forEach((el) => (reduced ? el.classList.add("stepped") : stepIO.observe(el)));
+
+// ---- 8px dot matrix: voids and coverless plate art, pointer-local darkening ----
+const DPR = Math.min(2, devicePixelRatio || 1);
+let px = -9999, py = -9999;
+const canvases = [...document.querySelectorAll(".void canvas, canvas.art-dots")];
+// Coverless plates draw their figure in the matrix itself: clusters for the
+// clustering study, a fitted line through scattered points for the regression.
+const clusters = [[0.3, 0.38, 0.13], [0.66, 0.62, 0.15], [0.74, 0.26, 0.08]];
+function draw(c) {
+  const r = c.getBoundingClientRect();
+  if (r.bottom < -200 || r.top > innerHeight + 200 || r.width === 0) return;
+  const w = Math.round(r.width), h = Math.round(r.height);
+  if (c.width !== w * DPR || c.height !== h * DPR) { c.width = w * DPR; c.height = h * DPR; }
+  const g = c.getContext("2d");
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  g.clearRect(0, 0, w, h);
+  const kind = c.dataset.kind;
+  for (let y = 4; y < h; y += 8) {
+    for (let x = 4; x < w; x += 8) {
+      const d = Math.hypot(r.left + x - px, r.top + y - py);
+      let a = reduced ? 0.16 : Math.max(0.12, 1 - d / 120) * 0.9;
+      let rad = 1;
+      if (kind === "cluster" && clusters.some(([cx, cy, cr]) => Math.hypot(x - cx * w, y - cy * h) < cr * Math.min(w, h) * 1.1)) { a = Math.max(a, 0.85); rad = 1.7; }
+      if (kind === "regress") {
+        const ly = h * 0.85 - (x / w) * h * 0.7;
+        if (Math.abs(y - ly) < 4) { a = 0.95; rad = 1.4; }
+        else if (Math.abs(y - ly) < 22 && ((x * 7 + y * 13) % 37) < 4) { a = 0.85; rad = 1.9; }
+      }
+      g.fillStyle = `rgba(22,24,26,${a.toFixed(3)})`;
+      g.beginPath(); g.arc(x, y, rad, 0, Math.PI * 2); g.fill();
+    }
+  }
+}
+let raf = 0;
+const redraw = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => canvases.forEach(draw)); };
+addEventListener("pointermove", (e) => { px = e.clientX; py = e.clientY; if (!reduced) redraw(); }, { passive: true });
+addEventListener("scroll", redraw, { passive: true });
+addEventListener("resize", redraw);
+redraw();
+
+$("#motion").addEventListener("click", (e) => {
+  reduced = !reduced;
+  document.documentElement.classList.toggle("reduced", reduced);
+  if (reduced) { stop(); setBeat(3); document.querySelectorAll(".step-in").forEach((el) => el.classList.add("stepped")); }
+  redraw();
+  e.currentTarget.textContent = reduced ? "Enable motion" : "Reduce motion";
+});
+</script>
+</body>
+</html>

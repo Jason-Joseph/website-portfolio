@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 // content.ts
 // Single source of truth for all portfolio copy, extracted from
-// "Jason Resume June 2026.pdf" and github.com/Jason-Joseph.
+// "Jason Resume 2026-09.pdf" and github.com/Jason-Joseph.
 // Presentation-agnostic: every section component reads from here.
 // ---------------------------------------------------------------------------
 
@@ -77,25 +77,25 @@ export const content = {
   profile: {
     name: "Jason Joseph Tjiadi",
     firstName: "Jason",
-    title: "Data Enthusiast",
+    title: "Data Analyst",
     tagline:
-      "Fintech and banking analytics across Singapore and Indonesia — turning transaction data and business signals into clarity that actually changes decisions.",
-    photoPath: "/portrait.jpg",
+      "Two years of fintech and banking analytics across Singapore and Indonesia — KPI dashboards and alerts that inform pricing, product, and partnership decisions.",
+    photoPath: "/jason-2026-08.jpg",
   } satisfies Profile,
 
   about: {
     lead: "I turn messy, real-world data into insight people can act on.",
     body:
-      "I'm an NUS Master of Communication graduate (Data and Communication), and a First Class LSE graduate in Data Science & Business Analytics. " +
-      "My work spans analytics and partnerships across fintech and banking: building dashboards, automating reporting, and digging into transaction data. " +
-      "Day to day, that means Python, SQL, and BI tools, and staying curious about what the numbers are trying to say.",
+      "I'm a data analyst with a First Class BSc in Data Science and Business Analytics from the University of London, under LSE academic direction, and a Master of Communication (Data and Communication) from NUS. " +
+      "I've spent two years in fintech and banking, analysing data on 10,000+ merchants and 200,000 high-net-worth customers, and building the KPI dashboards and alerts that inform pricing, product, and partnership decisions. " +
+      "Day to day, that means SQL, Python, and BI tools. I work in English and Bahasa Indonesia.",
   },
 
   stats: [
     { value: "10,000+", label: "merchants analysed at KPay" },
     { value: "~21%", label: "average GPV growth supported" },
-    { value: "20+", label: "merchant partners at BCA" },
-    { value: "First Class", label: "honours, LSE" },
+    { value: "200,000", label: "high-net-worth customers profiled at BCA" },
+    { value: "First Class", label: "honours, University of London (LSE)" },
   ] satisfies StatItem[],
 
   // ---------------------------------------------------------------------
@@ -125,7 +125,7 @@ export const content = {
     /** Y-axis ceiling. Baseline is always zero — never truncate it. */
     axisMax: 50,
     method:
-      "Python, pandas. 11.7M rows cleaned and grouped. Four models benchmarked, Random Forest best at R² 0.975.",
+      "Python, pandas, scikit-learn. 11.7M rows cleaned and grouped. Four models benchmarked, Random Forest best at R² 0.975.",
     notebook:
       "https://github.com/Jason-Joseph/Projects/blob/main/Data%20Expo%202002-2003%20Airline%20Time%20Data.ipynb",
   },
@@ -139,24 +139,25 @@ export const content = {
       dates: "Sep 2025 — Mar 2026",
       logo: "/logos/kpay.svg",
       highlights: [
-        "Built dashboards analysing payment data for 10,000+ merchants, giving stakeholders visibility into product usage, revenue performance, and growth trends.",
-        "Conducted merchant profitability and acquirer-level analysis to support routing and pricing decisions, contributing to ~21% average GPV growth across merchant segments and improved net take rate.",
-        "Automated recurring reports and data workflows, and supported the platform data migration that improved data accuracy and reliability.",
-        "Cleaned and validated payment and merchant data in Python using fuzzy matching to ensure integrity across business reviews and reporting.",
+        "Shaped merchant programme strategy for the Director of Revenue Operations and project managers by evaluating programme performance across 10,000+ merchants with SQL and Python.",
+        "Contributed to ~21% average GPV growth and a higher net take rate across merchant segments by analysing merchant profitability and acquirer-level performance to guide routing and pricing.",
+        "Improved visibility of merchant performance, product adoption, and the lead-to-signing pipeline for sales and management by building a suite of Lark dashboards fed by Zapier from WATI.",
+        "Eliminated a manual weekly review by automating GPV monitoring for 500+ target merchants in Google Apps Script and Google Sheets, with threshold alerts flagging at-risk accounts.",
+        "Kept merchant records consistent through a platform data migration by standardising naming across source systems with Python fuzzy matching.",
       ],
     },
     {
       company: "PT Bank Central Asia Tbk (BCA)",
       shortName: "BCA",
-      role: "Analyst, Partnership & Benefits · Individual Customer Business Division",
-      location: "Indonesia",
+      role: "Partnership & Benefits Analyst · Individual Customer Business Division",
+      location: "Jakarta, Indonesia",
       dates: "Dec 2023 — Jul 2025",
       logo: "/logos/bca.svg",
       highlights: [
-        "Analysed transaction data across 20+ merchant partners, identifying ~10% average YoY sales uplift through BCA's internal transaction system.",
-        "Examined benefits-usage data from data warehouse (DWH) extracts to identify high-value usage patterns, which informed the design of new premium benefit offerings.",
-        "Enhanced an internal benefit-tracking web app (OutSystems), enabling service teams to log and manage premier banking benefits and improving reporting visibility.",
-        "Planned and ran exclusive events (expos, forums) for high-net-worth clients to strengthen relationships and engagement.",
+        "Shaped the proposition for a new ultra-high-net-worth tier by profiling 200,000 high-net-worth customers' demographics, spending, and behaviour from data warehouse extracts in Power BI and Excel.",
+        "Identified a ~10% average YoY sales uplift across 20+ merchant partners by analysing transaction data in Excel and Power BI and delivering partner performance insights.",
+        "Established the first centralised record of premier banking benefit usage by implementing an OutSystems tracking application that replaced manual logs across the customer service team.",
+        "Strengthened relationships with high-net-worth customers by organising exclusive client events, including an economic forum for 300+ guests alongside BCA's senior leadership.",
       ],
     },
   ] satisfies ExperienceItem[],
@@ -170,45 +171,55 @@ export const content = {
       logo: "/logos/nus.png",
     },
     {
-      institution: "London School of Economics",
-      degree: "BSc Data Science & Business Analytics",
+      institution: "University of London, academic direction from the London School of Economics (LSE)",
+      degree: "BSc Data Science and Business Analytics",
       dates: "Oct 2020 — Aug 2023",
       details:
-        "First Class Honours · Achiever's Award (2021) · Distinction, CHESS programme",
+        "First Class Honours · Studied at SIM, Singapore · Achiever's Award (2021) · Distinction, CHESS programme",
       logo: "/logos/lse.svg",
     },
   ] satisfies EducationItem[],
 
   skills: [
-    { category: "Languages & Querying", items: ["Python", "SQL", "R", "SPSS"] },
     {
-      category: "BI & Visualization",
-      items: ["Tableau", "Power BI", "Google Sheets", "Lark"],
+      category: "Querying & Programming",
+      items: ["SQL (PostgreSQL, MySQL, BigQuery)", "Python (pandas, scikit-learn)", "R", "SPSS", "Git/GitHub"],
     },
     {
-      category: "Data Work",
+      category: "BI & Visualisation",
+      items: ["Tableau", "Power BI", "Looker Studio", "Google Sheets", "Lark dashboards"],
+    },
+    {
+      category: "Excel & Office",
+      items: ["Advanced Excel (Power Query, XLOOKUP, dynamic arrays, Pivot Tables)", "PowerPoint", "Word"],
+    },
+    {
+      category: "Analytics",
       items: [
-        "Dashboarding",
-        "Data cleaning & validation",
-        "Automated reporting",
+        "Data cleaning",
+        "KPI reporting",
+        "Funnel and cohort analysis",
+        "RFM segmentation",
+        "ETL automation",
         "Data migration",
       ],
     },
-    { category: "Spoken", items: ["English", "Bahasa Indonesia"] },
+    { category: "Languages", items: ["English (fluent)", "Bahasa Indonesia (native)"] },
   ] satisfies SkillCategory[],
 
   marquee: [
-    "Python",
     "SQL",
+    "Python",
     "R",
     "Tableau",
     "Power BI",
+    "Looker Studio",
     "pandas",
-    "Data Visualization",
-    "Dashboarding",
-    "Automated Reporting",
-    "SPSS",
-    "Data Migration",
+    "scikit-learn",
+    "KPI Reporting",
+    "Cohort Analysis",
+    "RFM Segmentation",
+    "ETL Automation",
   ],
 
   // Pulled from GitHub (github.com/Jason-Joseph) — the substantive,
@@ -216,10 +227,10 @@ export const content = {
   projects: [
     {
       index: "01",
-      title: "Airline Flight Delay Analysis",
+      title: "Flight Delay Analysis & Prediction",
       description:
-        "Two years of U.S. flight on-time data, merged and cleaned in Python — pinpointing the best time of day, day of week, and season to fly to minimise delays, and testing whether older aircraft suffer more.",
-      tags: ["Python", "pandas", "EDA"],
+        "Predicted flight delays with R² 0.975 using Random Forest, the best of four benchmarked models, after cleaning 11.7M US flight records to find the lowest-delay travel windows.",
+      tags: ["Python", "scikit-learn", "pandas"],
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Data%20Expo%202002-2003%20Airline%20Time%20Data.ipynb",
       image: "/projects/q1_delay_by_day.png",
       imageAlt: "Bar chart of average U.S. flight delay by day of week",
@@ -239,10 +250,10 @@ export const content = {
     },
     {
       index: "03",
-      title: "Online Retail Customer Analytics Dashboard",
+      title: "Customer Retention Analytics",
       description:
-        "Capstone from the Dibimbing.id BI bootcamp — RFM segmentation and cohort analysis across 1.07M UK retail transactions, from raw data to boardroom-ready dashboards.",
-      tags: ["Business Intelligence", "Tableau", "Power BI"],
+        "Surfaced a 6 to 10 month churn window across 1.07M transactions using RFM segmentation in PostgreSQL (CTEs, window functions) and cohort analysis in Tableau.",
+      tags: ["SQL", "Python", "Tableau"],
       link: "https://github.com/Jason-Joseph/Projects/blob/main/Online%20Retail%20Customer%20Analytics%20Dashboard.pdf",
       image: "/projects/cohort_analysis.jpg",
       imageAlt: "Customer retention cohort analysis heatmap",
@@ -252,8 +263,8 @@ export const content = {
       index: "04",
       title: "This Portfolio Site",
       description:
-        "The site you're on: a three.js silk shader, GSAP scroll choreography, and React, designed and shipped end-to-end in partnership with Claude Code.",
-      tags: ["Claude Code", "three.js", "React"],
+        "The site you're on: a procedural three.js city that turns from golden hour to night as you scroll, with GSAP scroll choreography and a live data story, designed and shipped end-to-end in partnership with Claude Code.",
+      tags: ["Claude Code", "three.js", "GSAP"],
       link: "#top",
       image: "/projects/portfolio-cover.jpg",
       imageAlt: "Hero of this portfolio: numbers made legible, decisions made easier",
